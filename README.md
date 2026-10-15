@@ -2,7 +2,7 @@
 
 > 一个基于网页的在线塔罗牌占卜应用，提供沉浸式的塔罗牌阅读体验。
 
-[在线体验 →](#) | [English](#english)
+[在线体验 →](https://yaohaoliang141-max.github.io/-mystic-tarot/) | [English](#english)
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
@@ -22,16 +22,16 @@
 
 ## 🚀 快速开始
 
-### 方式一：直接打开
+### 方式一：直接在线体验
 
-下载项目后，双击 `index.html` 即可在浏览器中打开使用。
+访问：[https://yaohaoliang141-max.github.io/-mystic-tarot/](https://yaohaoliang141-max.github.io/-mystic-tarot/)
 
-### 方式二：本地服务器
+### 方式二：本地运行
 
 ```bash
 # 克隆仓库
-git clone https://github.com/YOUR_USERNAME/mystic-tarot.git
-cd mystic-tarot
+git clone https://github.com/yaohaoliang141-max/-mystic-tarot.git
+cd -mystic-tarot
 
 # 使用 Python 启动服务器
 python -m http.server 8080

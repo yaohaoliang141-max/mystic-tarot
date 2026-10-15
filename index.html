@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>神秘塔罗 | Mystic Tarot - 在线塔罗牌占卜</title>
-    <meta name="description" content="在线塔罗牌占卜，探索命运的奥秘。支持单牌、三牌、凯尔特十字等多种牌阵，完整78张塔罗牌。">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="description" content="在线塔罗牌占卜，探索命运的奥秘。实时3D古典星象仪沉浸式空间，支持单牌、三牌、凯尔特十字等经典牌阵，内置完整78张塔罗牌与AI大模型灵性导师深度解盘。">
+    <meta name="theme-color" content="#06040b">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Stars Background -->
-    <div id="stars-bg" class="stars-bg"></div>
+    <!-- Real-time 3D Celestial Astrolabe Canvas -->
+    <canvas id="celestial-canvas" class="celestial-canvas"></canvas>
 
     <!-- Navigation -->
     <nav id="main-nav" class="main-nav">
@@ -37,44 +39,97 @@
     <main id="app">
         <!-- Landing Page -->
         <section id="landing-page" class="page active">
-            <div class="hero">
-                <div class="hero-decoration">
-                    <div class="moon"></div>
-                    <div class="orbit orbit-1"></div>
-                    <div class="orbit orbit-2"></div>
+            <div class="editorial-hero">
+                <div class="hero-editorial-left">
+                    <div class="editorial-metadata">
+                        <span class="meta-tag">ARCHIVE OF CELESTIAL MYSTERIES</span>
+                        <span class="meta-divider">·</span>
+                        <span class="meta-tag">VOL. I</span>
+                        <span class="meta-divider">·</span>
+                        <span class="meta-coords">LAT 31°14'N · LONG 121°29'E</span>
+                    </div>
+
+                    <h1 class="editorial-title">
+                        <span class="title-eyebrow">MYSTIC TAROT</span>
+                        <span class="title-main">神秘塔罗</span>
+                        <span class="title-sub">古典星象仪 · 命盘推演</span>
+                    </h1>
+
+                    <p class="editorial-manifesto">
+                        “如其在上，如其在下。转动的黄道盘与七十八张奥秘牌阵，映照潜意识深处早已写就的启示。”
+                    </p>
+
+                    <div class="hero-actions-row">
+                        <button id="start-btn" class="btn btn-primary btn-editorial-start">
+                            <span class="btn-sigil">✦</span>
+                            <span class="btn-text">启行占卜 · INITIATE READING</span>
+                            <span class="btn-arrow">→</span>
+                        </button>
+                        <button id="explore-meanings-btn" class="btn btn-secondary btn-editorial-explore">
+                            <span>探索 78 张牌义</span>
+                        </button>
+                    </div>
+
+                    <div class="editorial-telemetry">
+                        <div class="telemetry-item">
+                            <span class="tel-label">黄道倾角 / OBLIQUITY</span>
+                            <span class="tel-value">23° 26' 14"</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="tel-label">星象仪律动 / CHRONO</span>
+                            <span class="tel-value">SYNCHRONIZED</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="tel-label">交互空间 / SPACE</span>
+                            <span class="tel-value">REALTIME 3D</span>
+                        </div>
+                    </div>
                 </div>
-                <h1 class="hero-title">
-                    <span class="title-decorative">✦</span>
-                    神秘塔罗
-                    <span class="title-decorative">✦</span>
-                </h1>
-                <p class="hero-subtitle">Mystic Tarot</p>
-                <p class="hero-tagline">探索命运的奥秘，聆听宇宙的指引</p>
-                <button id="start-btn" class="btn btn-primary btn-glow">
-                    <span class="btn-text">开始占卜</span>
-                    <span class="btn-icon">→</span>
-                </button>
+
+                <div class="hero-editorial-right">
+                    <!-- Transparent window showing 3D Astrolabe with subtle interactive indicator -->
+                    <div class="astrolabe-viewport-indicator">
+                        <div class="interactive-hint-pill">
+                            <span class="hint-dot"></span>
+                            <span class="hint-text">拖拽感应空间视差 · 点击触发星宿共鸣</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="features">
-                <div class="feature-card">
-                    <div class="feature-icon">🎴</div>
-                    <h3>多种牌阵</h3>
-                    <p>单牌、三牌、凯尔特十字等经典牌阵</p>
+
+            <!-- Luxury Editorial Pillars -->
+            <div class="editorial-pillars">
+                <div class="pillar-card">
+                    <div class="pillar-numeral">Ⅰ</div>
+                    <div class="pillar-header">
+                        <h3>四大古典星盘</h3>
+                        <span class="pillar-en">CELESTIAL SPREADS</span>
+                    </div>
+                    <p>单牌即时指引、时间之流三世相合、五角深层恋语与十阶凯尔特十字阵，层层拨开命途迷雾。</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌟</div>
-                    <h3>深度解读</h3>
-                    <p>每张牌的正逆位详细解读</p>
+                <div class="pillar-card">
+                    <div class="pillar-numeral">Ⅱ</div>
+                    <div class="pillar-header">
+                        <h3>阴阳正逆双极</h3>
+                        <span class="pillar-en">POLAR DUALITY</span>
+                    </div>
+                    <p>七十八张大象无形之秘，精密收录每张牌的顺位光明启示与逆位心魔诫言，涵括爱恋、功业与财运。</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💫</div>
-                    <h3>全套塔罗</h3>
-                    <p>完整78张大小阿卡纳牌</p>
+                <div class="pillar-card">
+                    <div class="pillar-numeral">Ⅲ</div>
+                    <div class="pillar-header">
+                        <h3>AI 灵性导师</h3>
+                        <span class="pillar-en">ARCHETYPE AGENT</span>
+                    </div>
+                    <p>融汇荣格原型心理学与先进大语言模型。千字个性化立体解盘，并支持解牌后实时无尽追问。</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔮</div>
-                    <h3>命运指引</h3>
-                    <p>爱情、事业、健康全方位指引</p>
+                <div class="pillar-card">
+                    <div class="pillar-numeral">Ⅳ</div>
+                    <div class="pillar-header">
+                        <h3>实时星盘推演</h3>
+                        <span class="pillar-en">CHRONO-ASTROLOGY</span>
+                    </div>
+                    <p>纯实时三维数学建模之古典星象仪，随鼠标动线流转倾斜，点击泛起星河涟漪，带来沉浸式心灵仪式感。</p>
                 </div>
             </div>
         </section>
@@ -371,7 +426,9 @@
         </div>
     </footer>
 
+    <script src="js/three.min.js"></script>
     <script src="js/tarot-data.js"></script>
+    <script src="js/celestial-astrolabe.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

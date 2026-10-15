@@ -74,6 +74,7 @@
         bindAiChat();
         updateAiBadgeStatus();
         loadMeaningsPage('major');
+        initCard3DTilt();
     }
 
     // ---- Stars Background ----
@@ -152,6 +153,14 @@
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
         state.currentPage = pageId;
+
+        if (window.CelestialSpace && typeof window.CelestialSpace.setMode === 'function') {
+            if (pageId === 'landing') {
+                window.CelestialSpace.setMode('idle');
+            } else {
+                window.CelestialSpace.setMode('divination');
+            }
+        }
     }
 
     // ---- AI Config & Storage ----
@@ -348,7 +357,26 @@
     function bindActionButtons() {
         const startBtn = $('#start-btn');
         if (startBtn) {
-            startBtn.addEventListener('click', function () { navigateTo('spread'); });
+            startBtn.addEventListener('click', function () {
+                if (window.CelestialSpace && typeof window.CelestialSpace.triggerCosmicAlignment === 'function') {
+                    startBtn.style.pointerEvents = 'none';
+                    startBtn.style.opacity = '0.75';
+                    window.CelestialSpace.triggerCosmicAlignment(function () {
+                        startBtn.style.pointerEvents = '';
+                        startBtn.style.opacity = '';
+                        navigateTo('spread');
+                    });
+                } else {
+                    navigateTo('spread');
+                }
+            });
+        }
+
+        const exploreBtn = $('#explore-meanings-btn');
+        if (exploreBtn) {
+            exploreBtn.addEventListener('click', function () {
+                navigateTo('meanings');
+            });
         }
 
         const beginBtn = $('#begin-btn');
@@ -378,6 +406,29 @@
                 navigateTo('spread');
             });
         }
+    }
+
+    // ---- 3D Card Hover & Tilt Dynamic Response ----
+    function initCard3DTilt() {
+        document.addEventListener('mousemove', function (e) {
+            const card = e.target.closest('.tarot-card:not(.disabled), .spread-card, .pillar-card');
+            if (!card) return;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const tiltX = (y - centerY) / centerY * -8;
+            const tiltY = (x - centerX) / centerX * 8;
+            card.style.transform = `perspective(1000px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) translateY(-8px)`;
+        });
+
+        document.addEventListener('mouseout', function (e) {
+            const card = e.target.closest('.tarot-card, .spread-card, .pillar-card');
+            if (card && (!e.relatedTarget || !card.contains(e.relatedTarget))) {
+                card.style.transform = '';
+            }
+        });
     }
 
     // ---- Start Reading ----

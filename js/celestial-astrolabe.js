@@ -12,18 +12,18 @@
         return;
     }
 
-    // ---- Color Palette (Luxury Champagne & Deep Obsidian) ----
+    // ---- Color Palette (Luxury Champagne & Deep Cosmic Void) ----
     const COLORS = {
-        bgDeep: 0x06040b,
-        goldPrimary: 0xd4af37,
+        bgDeep: 0x020106,
+        goldPrimary: 0xc5a467,
         goldChampagne: 0xdfc58d,
-        goldDark: 0x8a6e32,
-        goldBronze: 0x5a441e,
+        goldDark: 0x7a5e28,
+        goldBronze: 0x4e3a18,
         ivoryWarm: 0xf5eedc,
-        violetGlow: 0x241544,
+        violetGlow: 0x160d2b,
         starWhite: 0xfffcf5,
-        starWarm: 0xffe6b8,
-        starViolet: 0xd2c2ff
+        starWarm: 0xf7e2be,
+        starViolet: 0xc4b5ed
     };
 
     // ---- Engine State ----
@@ -55,7 +55,8 @@
         alidadePointer: null,
         centralJewel: null,
 
-        // Particle & Starfield Systems
+        // Milky Way & Starfield Systems
+        milkyWayMesh: null,
         starfield: null,
         starPositions: null,
         starOriginals: null,
@@ -92,7 +93,7 @@
 
         // Scene
         engine.scene = new THREE.Scene();
-        engine.scene.fog = new THREE.FogExp2(COLORS.bgDeep, 0.018);
+        engine.scene.fog = new THREE.FogExp2(COLORS.bgDeep, 0.012);
 
         // Camera
         const aspect = window.innerWidth / window.innerHeight;
@@ -111,7 +112,8 @@
         engine.renderer.setPixelRatio(dpr);
         engine.renderer.setClearColor(COLORS.bgDeep, 1);
 
-        // Build 3D World
+        // Build 3D Deep Space World
+        createMilkyWayBackdrop();
         createSpatialStarfield();
         createAstrolabe();
         createDustMotes();
@@ -144,7 +146,7 @@
     }
 
     // ========================================================
-    // ASTROLABE 3D CONSTRUCTION (古典星象仪结构)
+    // ASTROLABE 3D CONSTRUCTION (古典星象仪结构 - 哑光古典蚀刻)
     // ========================================================
     function createAstrolabe() {
         const root = new THREE.Group();
@@ -152,11 +154,11 @@
 
         // Place on right side for luxury editorial desktop layout
         if (engine.isMobile) {
-            root.position.set(0, 1.2, -1.0);
-            root.scale.set(0.72, 0.72, 0.72);
+            root.position.set(0, 1.2, -1.2);
+            root.scale.set(0.68, 0.68, 0.68);
         } else {
-            root.position.set(2.8, 0.1, 0);
-            root.scale.set(1.0, 1.0, 1.0);
+            root.position.set(2.8, 0.1, -0.4);
+            root.scale.set(0.96, 0.96, 0.96);
         }
 
         // Initial Astronomical Tilts (Pitch & Ecliptic lean)
@@ -173,14 +175,14 @@
             transparent: true,
             side: THREE.DoubleSide,
             color: COLORS.goldChampagne,
-            opacity: 0.95
+            opacity: 0.48
         });
         const materMesh = new THREE.Mesh(materGeo, materMat);
         root.add(materMesh);
         engine.outerMaterRing = materMesh;
 
         // Brass Hairline Borders
-        const borderMat = new THREE.LineBasicMaterial({ color: COLORS.goldPrimary, transparent: true, opacity: 0.8 });
+        const borderMat = new THREE.LineBasicMaterial({ color: COLORS.goldPrimary, transparent: true, opacity: 0.42 });
         const outerCircle = createHairlineCircle(outerRadius, borderMat);
         const innerCircle = createHairlineCircle(outerRadius - 0.28, borderMat);
         root.add(outerCircle);
@@ -197,7 +199,7 @@
             transparent: true,
             side: THREE.DoubleSide,
             color: COLORS.goldChampagne,
-            opacity: 0.92
+            opacity: 0.45
         });
         const zodiacMesh = new THREE.Mesh(zodiacGeo, zodiacMat);
         zodiacGroup.add(zodiacMesh);
@@ -212,10 +214,10 @@
 
         // 3. Armillary Rete (天球赤道与坐标镂空骨架)
         const reteGroup = new THREE.Group();
-        const reteMat = new THREE.LineBasicMaterial({ color: COLORS.goldDark, transparent: true, opacity: 0.65 });
+        const reteMat = new THREE.LineBasicMaterial({ color: COLORS.goldDark, transparent: true, opacity: 0.28 });
 
         // Concentric Coordinate Arcs
-        [2.35, 1.8, 1.25, 0.75].forEach((rad, idx) => {
+        [2.35, 1.8, 1.25, 0.75].forEach((rad) => {
             const line = createHairlineCircle(rad, reteMat);
             reteGroup.add(line);
         });
@@ -263,7 +265,7 @@
             const ringG = createHairlineCircle(rad, new THREE.LineBasicMaterial({
                 color: idx === 0 ? COLORS.goldChampagne : COLORS.goldDark,
                 transparent: true,
-                opacity: 0.75
+                opacity: 0.35
             }));
             dialG.add(ringG);
 
@@ -278,7 +280,7 @@
             const polyLine = new THREE.Line(polyGeo, new THREE.LineBasicMaterial({
                 color: COLORS.goldBronze,
                 transparent: true,
-                opacity: 0.5
+                opacity: 0.25
             }));
             dialG.add(polyLine);
 
@@ -307,7 +309,7 @@
         const aliLine = new THREE.Line(aliGeo, new THREE.LineBasicMaterial({
             color: COLORS.ivoryWarm,
             transparent: true,
-            opacity: 0.9
+            opacity: 0.52
         }));
         alidadeG.add(aliLine);
 
@@ -324,7 +326,9 @@
         // 6. Central Brass Boss & Axle (中心黄铜宝核)
         const centerBossGeo = new THREE.CircleGeometry(0.24, 32);
         const centerBossMat = new THREE.MeshBasicMaterial({
-            color: COLORS.goldPrimary,
+            color: COLORS.goldDark,
+            transparent: true,
+            opacity: 0.6,
             side: THREE.DoubleSide
         });
         const centerBoss = new THREE.Mesh(centerBossGeo, centerBossMat);
@@ -334,6 +338,8 @@
         const jewelGeo = new THREE.CircleGeometry(0.12, 32);
         const jewelMat = new THREE.MeshBasicMaterial({
             color: COLORS.ivoryWarm,
+            transparent: true,
+            opacity: 0.75,
             side: THREE.DoubleSide
         });
         const jewel = new THREE.Mesh(jewelGeo, jewelMat);
@@ -365,8 +371,8 @@
         const cy = size / 2;
 
         ctx.clearRect(0, 0, size, size);
-        ctx.strokeStyle = '#dfc58d';
-        ctx.fillStyle = '#f5eedc';
+        ctx.strokeStyle = '#c5a467';
+        ctx.fillStyle = '#e2d7c0';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
@@ -381,7 +387,7 @@
             const sin = Math.sin(rad);
 
             let rStart = (i % 10 === 0) ? rInner2 : ((i % 5 === 0) ? rInner1 : size * 0.475);
-            ctx.lineWidth = (i % 10 === 0) ? 2.5 : 1.2;
+            ctx.lineWidth = (i % 10 === 0) ? 2.0 : 0.9;
 
             ctx.beginPath();
             ctx.moveTo(cx + cos * rStart, cy + sin * rStart);
@@ -400,7 +406,7 @@
         }
 
         const tex = new THREE.CanvasTexture(cv);
-        tex.anisotropy = 8;
+        tex.anisotropy = 4;
         return tex;
     }
 
@@ -414,8 +420,8 @@
         const cy = size / 2;
 
         ctx.clearRect(0, 0, size, size);
-        ctx.strokeStyle = '#c5a467';
-        ctx.fillStyle = '#f7f4ed';
+        ctx.strokeStyle = '#b39356';
+        ctx.fillStyle = '#e5dbcb';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
@@ -428,7 +434,7 @@
             const sin = Math.sin(a);
 
             // Dividing graduation lines
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 1.6;
             ctx.beginPath();
             ctx.moveTo(cx + cos * (size * 0.38), cy + sin * (size * 0.38));
             ctx.lineTo(cx + cos * (size * 0.49), cy + sin * (size * 0.49));
@@ -439,20 +445,151 @@
             const sx = cx + Math.cos(symAngle) * rZodiac;
             const sy = cy + Math.sin(symAngle) * rZodiac;
 
-            ctx.font = '24px serif';
+            ctx.font = '22px serif';
             ctx.fillText(symbols[i], sx, sy);
         }
 
         const tex = new THREE.CanvasTexture(cv);
-        tex.anisotropy = 8;
+        tex.anisotropy = 4;
         return tex;
     }
 
     // ========================================================
-    // SPATIAL STARFIELD & CELESTIAL GRID (深空星系与视差系统)
+    // REALISTIC MILKY WAY GALAXY BACKDROP (真实银河系背景系统)
+    // ========================================================
+    function createMilkyWayBackdrop() {
+        const cv = document.createElement('canvas');
+        cv.width = 2048;
+        cv.height = 1024;
+        const ctx = cv.getContext('2d');
+        const w = cv.width;
+        const h = cv.height;
+
+        // 1. Ultra-deep Celestial Base Void
+        const bgGrad = ctx.createRadialGradient(w * 0.65, h * 0.45, 80, w * 0.5, h * 0.5, w * 0.75);
+        bgGrad.addColorStop(0, '#0a0616');
+        bgGrad.addColorStop(0.3, '#05030e');
+        bgGrad.addColorStop(0.65, '#020106');
+        bgGrad.addColorStop(1, '#010003');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        function drawNebulaCloud(cx, cy, rx, ry, angle, colorStop0, colorStop1, alpha = 1.0) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(angle);
+            ctx.globalAlpha = alpha;
+            const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+            grad.addColorStop(0, colorStop0);
+            grad.addColorStop(0.5, colorStop1);
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.scale(1, ry / rx);
+            ctx.beginPath();
+            ctx.arc(0, 0, rx, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // 2. The Galactic Plane / Milky Way Arm (Diagonal Flow: ~ -30 deg)
+        const angle = -0.52;
+
+        // Interstellar Gas Base (Deep indigo & subtle violet)
+        drawNebulaCloud(w * 0.60, h * 0.42, 720, 260, angle, 'rgba(38, 22, 64, 0.38)', 'rgba(16, 9, 32, 0.12)', 0.85);
+        drawNebulaCloud(w * 0.42, h * 0.56, 780, 240, angle, 'rgba(28, 18, 52, 0.30)', 'rgba(12, 7, 24, 0.08)', 0.8);
+        drawNebulaCloud(w * 0.78, h * 0.30, 650, 210, angle, 'rgba(25, 16, 48, 0.28)', 'rgba(10, 6, 20, 0.08)', 0.75);
+
+        // Faint cosmic cyan/blue dust whispers along the outer arm
+        drawNebulaCloud(w * 0.50, h * 0.48, 540, 160, angle + 0.05, 'rgba(14, 32, 58, 0.22)', 'rgba(6, 16, 32, 0.06)', 0.7);
+        drawNebulaCloud(w * 0.72, h * 0.35, 490, 150, angle - 0.04, 'rgba(18, 36, 62, 0.20)', 'rgba(6, 14, 28, 0.06)', 0.65);
+
+        // 3. The Galactic Center Bulge & Nucleus (Sagittarius Region)
+        // Soft warm peach/amber core glow (realistic, not neon)
+        drawNebulaCloud(w * 0.65, h * 0.40, 380, 190, angle, 'rgba(215, 175, 125, 0.28)', 'rgba(150, 105, 65, 0.14)', 0.9);
+        drawNebulaCloud(w * 0.65, h * 0.40, 220, 110, angle, 'rgba(235, 200, 160, 0.34)', 'rgba(185, 135, 90, 0.18)', 0.95);
+        drawNebulaCloud(w * 0.65, h * 0.40, 110, 60, angle, 'rgba(245, 225, 195, 0.42)', 'rgba(210, 170, 125, 0.22)', 1.0);
+
+        // 4. Interstellar Dark Absorption Lanes (The Great Rift / 暗星云裂缝带)
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        for (let i = 0; i < 22; i++) {
+            const rx = 80 + Math.random() * 120;
+            const ry = 22 + Math.random() * 40;
+            const t = (i / 22) * 0.7 + 0.25;
+            const cx = w * t + (Math.random() - 0.5) * 60;
+            const cy = h * (0.85 - t * 0.7) + (Math.random() - 0.5) * 40;
+            const cloudAngle = angle + (Math.random() - 0.5) * 0.3;
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(cloudAngle);
+            ctx.globalAlpha = 0.32 + Math.random() * 0.3;
+            const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+            grad.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
+            grad.addColorStop(0.55, 'rgba(0, 0, 0, 0.35)');
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.scale(1, ry / rx);
+            ctx.beginPath();
+            ctx.arc(0, 0, rx, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+        ctx.restore();
+
+        // 5. Tens of thousands of microscopic stellar dust grains (Unresolved Milky Way Stars)
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        const numMicroStars = 12000;
+        for (let i = 0; i < numMicroStars; i++) {
+            const t = Math.random();
+            const baseX = w * (0.1 + t * 0.85);
+            const baseY = h * (0.85 - t * 0.75);
+
+            // Perpendicular spread (Gaussian approximation)
+            const spread = (Math.random() - 0.5) + (Math.random() - 0.5) + (Math.random() - 0.5);
+            const dist = spread * (75 + Math.sin(t * Math.PI) * 95);
+            const perpAngle = angle + Math.PI / 2;
+
+            const px = baseX + Math.cos(perpAngle) * dist;
+            const py = baseY + Math.sin(perpAngle) * dist;
+
+            if (px < 0 || px >= w || py < 0 || py >= h) continue;
+
+            const brightness = Math.random();
+            const radius = brightness > 0.97 ? (Math.random() * 1.0 + 0.6) : (Math.random() * 0.5 + 0.25);
+            const alpha = brightness > 0.97 ? (0.35 + Math.random() * 0.35) : (0.06 + Math.random() * 0.2);
+
+            ctx.fillStyle = brightness > 0.85 ? `rgba(255, 248, 230, ${alpha})` : `rgba(210, 222, 255, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(px, py, radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+
+        const tex = new THREE.CanvasTexture(cv);
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+
+        // Create deep background plane covering camera frustum
+        const planeGeo = new THREE.PlaneGeometry(160, 95);
+        const planeMat = new THREE.MeshBasicMaterial({
+            map: tex,
+            transparent: true,
+            opacity: 0.68,
+            depthWrite: false
+        });
+        const mesh = new THREE.Mesh(planeGeo, planeMat);
+        mesh.position.set(0, 0, -42);
+        engine.scene.add(mesh);
+        engine.milkyWayMesh = mesh;
+    }
+
+    // ========================================================
+    // SPATIAL STARFIELD (深空星系 - 低对比度与柔和微光)
     // ========================================================
     function createSpatialStarfield() {
-        const count = engine.isMobile ? 1200 : 2500;
+        const count = engine.isMobile ? 700 : 1400;
         const positions = new Float32Array(count * 3);
         const originalPositions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
@@ -464,10 +601,9 @@
 
         for (let i = 0; i < count; i++) {
             const idx = i * 3;
-            // Distribute deeply in Z for genuine spatial perspective
-            const x = (Math.random() - 0.5) * 45;
-            const y = (Math.random() - 0.5) * 32;
-            const z = -65 + Math.random() * 70; // z between -65 and +5
+            const x = (Math.random() - 0.5) * 48;
+            const y = (Math.random() - 0.5) * 34;
+            const z = -65 + Math.random() * 68;
 
             positions[idx] = x;
             positions[idx + 1] = y;
@@ -477,17 +613,17 @@
             originalPositions[idx + 1] = y;
             originalPositions[idx + 2] = z;
 
-            // Varied celestial color warmth
             const randColor = Math.random();
             let c = cWhite;
-            if (randColor < 0.35) c = cWarm;
-            else if (randColor > 0.8) c = cViolet;
+            if (randColor < 0.4) c = cWarm;
+            else if (randColor > 0.85) c = cViolet;
 
             colors[idx] = c.r;
             colors[idx + 1] = c.g;
             colors[idx + 2] = c.b;
 
-            sizes[i] = 1.0 + Math.random() * 2.5;
+            // Delicate pinpoint star sizes
+            sizes[i] = 0.8 + Math.random() * 1.4;
         }
 
         const geo = new THREE.BufferGeometry();
@@ -495,12 +631,12 @@
         geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-        // Round Particle Shader Material
+        // Soft Point Material with lower opacity
         const starMat = new THREE.PointsMaterial({
-            size: 2.2,
+            size: 1.4,
             vertexColors: true,
             transparent: true,
-            opacity: 0.85,
+            opacity: 0.45,
             sizeAttenuation: true
         });
 
@@ -510,26 +646,13 @@
         engine.starfield = points;
         engine.starPositions = positions;
         engine.starOriginals = originalPositions;
-
-        // Background Celestial Globe Grid (深空天球网)
-        const globeGeo = new THREE.IcosahedronGeometry(42, 2);
-        const globeMat = new THREE.MeshBasicMaterial({
-            color: COLORS.violetGlow,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.18
-        });
-        const globeMesh = new THREE.Mesh(globeGeo, globeMat);
-        globeMesh.position.z = -25;
-        engine.scene.add(globeMesh);
-        engine.celestialGlobe = globeMesh;
     }
 
     // ========================================================
-    // FOREGROUND DUST MOTES (带有轻柔排斥动力学的前景浮尘)
+    // FOREGROUND DUST MOTES (柔和微光浮尘)
     // ========================================================
     function createDustMotes() {
-        const count = engine.isMobile ? 40 : 110;
+        const count = engine.isMobile ? 20 : 45;
         const pos = new Float32Array(count * 3);
         const geo = new THREE.BufferGeometry();
         engine.dustData = [];
@@ -538,7 +661,7 @@
             const idx = i * 3;
             const x = (Math.random() - 0.5) * 18;
             const y = (Math.random() - 0.5) * 12;
-            const z = 1.0 + Math.random() * 5.0; // Near camera
+            const z = 1.0 + Math.random() * 5.0;
 
             pos[idx] = x;
             pos[idx + 1] = y;
@@ -547,7 +670,7 @@
             engine.dustData.push({
                 baseX: x, baseY: y, baseZ: z,
                 vx: 0, vy: 0,
-                speed: 0.002 + Math.random() * 0.004,
+                speed: 0.0015 + Math.random() * 0.003,
                 wobble: Math.random() * Math.PI * 2
             });
         }
@@ -555,9 +678,9 @@
         geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         const mat = new THREE.PointsMaterial({
             color: COLORS.goldChampagne,
-            size: 1.8,
+            size: 1.2,
             transparent: true,
-            opacity: 0.55,
+            opacity: 0.28,
             sizeAttenuation: true
         });
 
@@ -802,10 +925,11 @@
             engine.starfield.geometry.attributes.position.needsUpdate = true;
         }
 
-        // Rotate Celestial Globe Grid
-        if (engine.celestialGlobe) {
-            engine.celestialGlobe.rotation.y = time * 0.015;
-            engine.celestialGlobe.rotation.x = 0.35 + (engine.mouse.y * 0.05);
+        // Parallax & Drift for Realistic Milky Way Backdrop
+        if (engine.milkyWayMesh) {
+            engine.milkyWayMesh.position.x = -engine.mouse.x * 1.6;
+            engine.milkyWayMesh.position.y = -engine.mouse.y * 1.1;
+            engine.milkyWayMesh.rotation.z = -0.52 + (-engine.mouse.x * 0.025);
         }
 
         // 4. Foreground Dust Particles & Mouse Repulsion

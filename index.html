@@ -28,6 +28,7 @@
                 <a href="#" class="nav-link active" data-page="landing">首页</a>
                 <a href="#" class="nav-link" data-page="meanings">牌义大全</a>
                 <a href="#" class="nav-link" data-page="about">关于</a>
+                <button type="button" id="open-settings-nav-btn" class="nav-btn-settings">⚙️ AI 密钥设置</button>
             </div>
         </div>
     </nav>
@@ -158,6 +159,17 @@
                         <span class="cat-icon">💰</span> 财运
                     </button>
                 </div>
+                <div class="ai-mode-bar">
+                    <label class="ai-checkbox-label" title="开启后将使用大语言模型进行一对一个性化深度解盘">
+                        <input type="checkbox" id="ai-mode-toggle" checked>
+                        <span class="custom-toggle"></span>
+                        <span class="toggle-text">✨ 开启 AI 塔罗大师智能解盘</span>
+                    </label>
+                    <div id="ai-config-status" class="ai-config-status">
+                        <span id="ai-status-badge" class="badge badge-warning">未配置密钥 (使用经典牌义)</span>
+                        <button type="button" class="btn-text-link" id="quick-settings-btn">⚙️ 配置密钥</button>
+                    </div>
+                </div>
                 <button id="begin-btn" class="btn btn-primary btn-glow">
                     <span class="btn-text">开始抽牌</span>
                     <span class="btn-icon">🃏</span>
@@ -197,8 +209,36 @@
                     <button class="modal-close">✕</button>
                     <div id="modal-body" class="modal-body"></div>
                 </div>
-            </div>
+            <!-- AI Tarot Master Reading Container -->
+            <div id="ai-reading-container" class="ai-reading-container"></div>
+
+            <!-- Classic Offline Reading -->
             <div id="overall-reading" class="overall-reading"></div>
+
+            <!-- Interactive Follow-up Chat with Tarot Master -->
+            <div id="ai-chat-section" class="ai-chat-section" style="display:none;">
+                <div class="chat-header">
+                    <div class="chat-title-group">
+                        <span class="chat-avatar">🔮</span>
+                        <div>
+                            <h3>与 AI 塔罗大师深度追问</h3>
+                            <p class="chat-subtitle">对当前牌面有疑问？可随时向塔罗大师追问具体建议、发展走向或行动指南</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="chat-messages" class="chat-messages">
+                    <div class="chat-msg chat-msg-bot">
+                        <div class="msg-content">求问者，针对这组牌面与宇宙的隐喻，若你心中仍有迷茫或想追问更具体的情境，请直接告诉我，我将为你进一步洞察。</div>
+                    </div>
+                </div>
+                <div class="chat-input-row">
+                    <input type="text" id="chat-input" class="chat-input" placeholder="输入你想追问的问题（例如：那我下个月该如何应对？他和我的真实想法是什么？）..." autocomplete="off" />
+                    <button type="button" id="chat-send-btn" class="btn btn-primary chat-send-btn">
+                        <span>发送</span>
+                        <span>✨</span>
+                    </button>
+                </div>
+            </div>
             <div class="result-actions">
                 <button id="share-btn" class="btn btn-secondary">
                     <span>📋 复制结果</span>
@@ -250,6 +290,73 @@
             </div>
         </section>
     </main>
+
+    <!-- AI Settings Modal -->
+    <div id="settings-modal" class="modal" style="display:none;">
+        <div class="modal-overlay" id="settings-overlay"></div>
+        <div class="modal-content settings-modal-content">
+            <button class="modal-close" id="settings-close-btn" aria-label="关闭设置">✕</button>
+            <div class="modal-header">
+                <div class="settings-title-row">
+                    <span class="settings-icon">⚙️</span>
+                    <div>
+                        <h3>AI 塔罗占卜师 API 配置</h3>
+                        <p class="settings-subtitle">配置大语言模型 API Key，解锁灵性大模型深度解盘与多轮追问</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body settings-body">
+                <div class="form-group">
+                    <label for="api-provider-select">🌟 快速选择服务商：</label>
+                    <select id="api-provider-select" class="form-select">
+                        <option value="deepseek">DeepSeek 官方 (推荐，性价比极高)</option>
+                        <option value="siliconflow">硅基流动 SiliconFlow (支持 DeepSeek-V3/R1 免梯直连)</option>
+                        <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
+                        <option value="moonshot">月之暗面 Kimi (Moonshot AI)</option>
+                        <option value="zhipu">智谱清言 GLM (GLM-4-Flash)</option>
+                        <option value="custom">自定义 / 第三方代理中转 (OneAPI/NewAPI)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="api-base-url">🔗 接口地址 (Base URL)：</label>
+                    <input type="text" id="api-base-url" class="form-input" placeholder="https://api.deepseek.com/v1" />
+                    <small class="form-hint">需兼容 OpenAI Chat Completions 规范</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="api-key">🔑 API 密钥 (API Key)：</label>
+                    <div class="input-password-wrapper">
+                        <input type="password" id="api-key" class="form-input" placeholder="sk-..." />
+                        <button type="button" id="toggle-key-visibility" class="btn-icon-toggle" title="显示/隐藏密钥">👁️</button>
+                    </div>
+                    <small class="form-hint">🔒 密钥仅保存在你本机的浏览器 LocalStorage 中，直接从浏览器发起请求，绝对安全无泄露</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="api-model">🤖 模型名称 (Model ID)：</label>
+                    <input type="text" id="api-model" class="form-input" placeholder="deepseek-chat" />
+                    <small class="form-hint">如 deepseek-chat, deepseek-ai/DeepSeek-V3, gpt-4o-mini, moonshot-v1-8k 等</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="api-system-prompt">🔮 塔罗占卜师人设与指令 (System Prompt)：</label>
+                    <textarea id="api-system-prompt" class="form-textarea" rows="3">你是一位拥有古老智慧的神秘塔罗占卜大师与灵性导师。你精通神秘学象征主义与荣格心理学原型。在解读时，请结合求问者的问题、所抽出的牌阵位置、每张牌的正逆位深意以及多张牌之间的相互流转生克，为求问者带来富有洞察力、温暖且充满启发的深度解读与具体行动指引。</textarea>
+                </div>
+
+                <div id="settings-status-box" class="settings-status-box" style="display:none;"></div>
+
+                <div class="settings-btn-row">
+                    <button type="button" id="test-api-btn" class="btn btn-secondary">
+                        <span>⚡ 测试连接</span>
+                    </button>
+                    <button type="button" id="save-settings-btn" class="btn btn-primary">
+                        <span>💾 保存配置</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="main-footer">

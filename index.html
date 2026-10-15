@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘塔罗 | Mystic Tarot - 在线塔罗牌占卜</title>
+    <meta name="description" content="在线塔罗牌占卜，探索命运的奥秘。支持单牌、三牌、凯尔特十字等多种牌阵，完整78张塔罗牌。">
+    <meta name="theme-color" content="#0a0a1a">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Stars Background -->
+    <div id="stars-bg" class="stars-bg"></div>
+
+    <!-- Navigation -->
+    <nav id="main-nav" class="main-nav">
+        <div class="nav-container">
+            <a href="#" class="nav-brand" data-page="landing">
+                <span class="brand-icon">🔮</span>
+                <span class="brand-text">神秘塔罗</span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="切换导航">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="#" class="nav-link active" data-page="landing">首页</a>
+                <a href="#" class="nav-link" data-page="meanings">牌义大全</a>
+                <a href="#" class="nav-link" data-page="about">关于</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="app">
+        <!-- Landing Page -->
+        <section id="landing-page" class="page active">
+            <div class="hero">
+                <div class="hero-decoration">
+                    <div class="moon"></div>
+                    <div class="orbit orbit-1"></div>
+                    <div class="orbit orbit-2"></div>
+                </div>
+                <h1 class="hero-title">
+                    <span class="title-decorative">✦</span>
+                    神秘塔罗
+                    <span class="title-decorative">✦</span>
+                </h1>
+                <p class="hero-subtitle">Mystic Tarot</p>
+                <p class="hero-tagline">探索命运的奥秘，聆听宇宙的指引</p>
+                <button id="start-btn" class="btn btn-primary btn-glow">
+                    <span class="btn-text">开始占卜</span>
+                    <span class="btn-icon">→</span>
+                </button>
+            </div>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🎴</div>
+                    <h3>多种牌阵</h3>
+                    <p>单牌、三牌、凯尔特十字等经典牌阵</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌟</div>
+                    <h3>深度解读</h3>
+                    <p>每张牌的正逆位详细解读</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💫</div>
+                    <h3>全套塔罗</h3>
+                    <p>完整78张大小阿卡纳牌</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔮</div>
+                    <h3>命运指引</h3>
+                    <p>爱情、事业、健康全方位指引</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spread Selection Page -->
+        <section id="spread-page" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-page="landing">← 返回</button>
+                <h2 class="page-title">✦ 选择牌阵 ✦</h2>
+                <p class="page-desc">选择一种适合你问题的牌阵</p>
+            </div>
+            <div class="spread-options">
+                <div class="spread-card" data-spread="single">
+                    <div class="spread-card-glow"></div>
+                    <div class="spread-emoji">🎴</div>
+                    <h3>单牌占卜</h3>
+                    <p>抽取一张牌，获得简洁明了的指引</p>
+                    <div class="spread-meta">
+                        <span class="card-count">1 张牌</span>
+                        <span class="difficulty">⭐</span>
+                    </div>
+                </div>
+                <div class="spread-card" data-spread="three">
+                    <div class="spread-card-glow"></div>
+                    <div class="spread-emoji">🎴🎴🎴</div>
+                    <h3>时间之流</h3>
+                    <p>过去、现在与未来的连接</p>
+                    <div class="spread-meta">
+                        <span class="card-count">3 张牌</span>
+                        <span class="difficulty">⭐⭐</span>
+                    </div>
+                </div>
+                <div class="spread-card" data-spread="love">
+                    <div class="spread-card-glow"></div>
+                    <div class="spread-emoji">💕</div>
+                    <h3>爱情占卜</h3>
+                    <p>探索你的情感世界与关系</p>
+                    <div class="spread-meta">
+                        <span class="card-count">5 张牌</span>
+                        <span class="difficulty">⭐⭐</span>
+                    </div>
+                </div>
+                <div class="spread-card" data-spread="cross">
+                    <div class="spread-card-glow"></div>
+                    <div class="spread-emoji">✝️</div>
+                    <h3>凯尔特十字</h3>
+                    <p>最经典的十牌阵，全面深入解读</p>
+                    <div class="spread-meta">
+                        <span class="card-count">10 张牌</span>
+                        <span class="difficulty">⭐⭐⭐</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Question Input Page -->
+        <section id="question-page" class="page">
+            <div class="page-header">
+                <button class="btn-back" data-page="spread">← 返回</button>
+                <h2 class="page-title">✦ 冥想你的问题 ✦</h2>
+                <p class="page-desc">在心中默念你想问的问题，让宇宙感应你的能量</p>
+            </div>
+            <div class="question-form">
+                <div class="question-input-wrapper">
+                    <textarea id="question-text" class="question-textarea" placeholder="输入你的问题（可选）..." rows="3"></textarea>
+                </div>
+                <div class="category-buttons">
+                    <span class="category-label">选择领域：</span>
+                    <button class="category-btn active" data-category="general">
+                        <span class="cat-icon">🌌</span> 综合
+                    </button>
+                    <button class="category-btn" data-category="love">
+                        <span class="cat-icon">❤️</span> 爱情
+                    </button>
+                    <button class="category-btn" data-category="career">
+                        <span class="cat-icon">💼</span> 事业
+                    </button>
+                    <button class="category-btn" data-category="health">
+                        <span class="cat-icon">🌿</span> 健康
+                    </button>
+                    <button class="category-btn" data-category="wealth">
+                        <span class="cat-icon">💰</span> 财运
+                    </button>
+                </div>
+                <button id="begin-btn" class="btn btn-primary btn-glow">
+                    <span class="btn-text">开始抽牌</span>
+                    <span class="btn-icon">🃏</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Card Reading Page -->
+        <section id="reading-page" class="page">
+            <div class="page-header">
+                <h2 class="page-title">✦ 选择你的牌 ✦</h2>
+                <p class="page-desc">凭直觉从牌堆中选择 <span id="cards-needed" class="highlight">3</span> 张牌</p>
+            </div>
+            <div id="card-deck" class="card-deck"></div>
+            <div id="selected-area" class="selected-area">
+                <h3 class="selected-title">已选择的牌</h3>
+                <div id="selected-cards" class="selected-cards"></div>
+            </div>
+            <div style="text-align:center;">
+                <button id="reveal-btn" class="btn btn-primary btn-glow" style="display:none;">
+                    <span class="btn-text">揭示命运</span>
+                    <span class="btn-icon">✨</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Result Page -->
+        <section id="result-page" class="page">
+            <div class="page-header">
+                <h2 class="page-title">✦ 占卜结果 ✦</h2>
+                <p id="result-question" class="page-desc"></p>
+            </div>
+            <div id="result-spread" class="result-spread"></div>
+            <div id="card-detail-modal" class="card-detail-modal" style="display:none;">
+                <div class="modal-overlay"></div>
+                <div class="modal-content">
+                    <button class="modal-close">✕</button>
+                    <div id="modal-body" class="modal-body"></div>
+                </div>
+            </div>
+            <div id="overall-reading" class="overall-reading"></div>
+            <div class="result-actions">
+                <button id="share-btn" class="btn btn-secondary">
+                    <span>📋 复制结果</span>
+                </button>
+                <button id="new-reading-btn" class="btn btn-primary">
+                    <span>🔮 重新占卜</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Card Meanings Page -->
+        <section id="meanings-page" class="page">
+            <div class="page-header">
+                <h2 class="page-title">✦ 塔罗牌义大全 ✦</h2>
+                <p class="page-desc">了解每一张塔罗牌的含义</p>
+            </div>
+            <div class="meanings-filter">
+                <button class="filter-btn active" data-filter="major">大阿卡纳</button>
+                <button class="filter-btn" data-filter="wands">权杖</button>
+                <button class="filter-btn" data-filter="cups">圣杯</button>
+                <button class="filter-btn" data-filter="swords">宝剑</button>
+                <button class="filter-btn" data-filter="pentacles">星币</button>
+            </div>
+            <div id="meanings-grid" class="meanings-grid"></div>
+        </section>
+
+        <!-- About Page -->
+        <section id="about-page" class="page">
+            <div class="page-header">
+                <h2 class="page-title">✦ 关于神秘塔罗 ✦</h2>
+            </div>
+            <div class="about-content">
+                <div class="about-card">
+                    <h3>🔮 什么是塔罗牌？</h3>
+                    <p>塔罗牌是一种古老的占卜工具，起源于15世纪的欧洲。一副标准的塔罗牌由78张牌组成：22张大阿卡纳牌代表人生的重大主题和灵性课题，56张小阿卡纳牌则反映日常生活中的各种情境。</p>
+                </div>
+                <div class="about-card">
+                    <h3>🌟 如何使用？</h3>
+                    <p>1. 选择一种适合你的牌阵<br>2. 在心中冥想你的问题<br>3. 凭直觉选择牌面<br>4. 阅读解读，思考其中的启示</p>
+                </div>
+                <div class="about-card">
+                    <h3>⚠️ 温馨提示</h3>
+                    <p>塔罗牌仅供娱乐和自我反思参考，不构成任何专业建议。重要决策请咨询相关专业人士。</p>
+                </div>
+                <div class="about-card">
+                    <h3>💻 开源项目</h3>
+                    <p>本项目完全开源，使用纯HTML/CSS/JavaScript构建，无需后端服务器。欢迎访问 GitHub 查看源代码、提出建议或贡献代码。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p class="footer-brand">✨ 神秘塔罗 Mystic Tarot ✨</p>
+            <p class="footer-disclaimer">塔罗牌仅供娱乐参考，不构成任何实际建议</p>
+            <p class="footer-links">
+                <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+                <span>·</span>
+                <span>© 2026</span>
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/tarot-data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

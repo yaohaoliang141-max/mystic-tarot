@@ -455,134 +455,45 @@
     }
 
     // ========================================================
-    // REALISTIC MILKY WAY GALAXY BACKDROP (真实银河系背景系统)
+    // AUTHENTIC MILKY WAY GALAXY SYSTEM (真实欧洲南方天文台 ESO 银河系天球全景)
     // ========================================================
     function createMilkyWayBackdrop() {
-        const cv = document.createElement('canvas');
-        cv.width = 2048;
-        cv.height = 1024;
-        const ctx = cv.getContext('2d');
-        const w = cv.width;
-        const h = cv.height;
+        // 1. Inverted Celestial Sky Sphere surrounding the whole 3D world
+        const sphereRadius = 95;
+        const sphereGeo = new THREE.SphereGeometry(sphereRadius, 64, 40);
+        sphereGeo.scale(-1, 1, 1); // Invert normals to view from inside
 
-        // 1. Ultra-deep Celestial Base Void
-        const bgGrad = ctx.createRadialGradient(w * 0.65, h * 0.45, 80, w * 0.5, h * 0.5, w * 0.75);
-        bgGrad.addColorStop(0, '#0a0616');
-        bgGrad.addColorStop(0.3, '#05030e');
-        bgGrad.addColorStop(0.65, '#020106');
-        bgGrad.addColorStop(1, '#010003');
-        ctx.fillStyle = bgGrad;
-        ctx.fillRect(0, 0, w, h);
-
-        function drawNebulaCloud(cx, cy, rx, ry, angle, colorStop0, colorStop1, alpha = 1.0) {
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(angle);
-            ctx.globalAlpha = alpha;
-            const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
-            grad.addColorStop(0, colorStop0);
-            grad.addColorStop(0.5, colorStop1);
-            grad.addColorStop(1, 'transparent');
-            ctx.fillStyle = grad;
-            ctx.scale(1, ry / rx);
-            ctx.beginPath();
-            ctx.arc(0, 0, rx, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
-
-        // 2. The Galactic Plane / Milky Way Arm (Diagonal Flow: ~ -30 deg)
-        const angle = -0.52;
-
-        // Interstellar Gas Base (Deep indigo & subtle violet)
-        drawNebulaCloud(w * 0.60, h * 0.42, 720, 260, angle, 'rgba(38, 22, 64, 0.38)', 'rgba(16, 9, 32, 0.12)', 0.85);
-        drawNebulaCloud(w * 0.42, h * 0.56, 780, 240, angle, 'rgba(28, 18, 52, 0.30)', 'rgba(12, 7, 24, 0.08)', 0.8);
-        drawNebulaCloud(w * 0.78, h * 0.30, 650, 210, angle, 'rgba(25, 16, 48, 0.28)', 'rgba(10, 6, 20, 0.08)', 0.75);
-
-        // Faint cosmic cyan/blue dust whispers along the outer arm
-        drawNebulaCloud(w * 0.50, h * 0.48, 540, 160, angle + 0.05, 'rgba(14, 32, 58, 0.22)', 'rgba(6, 16, 32, 0.06)', 0.7);
-        drawNebulaCloud(w * 0.72, h * 0.35, 490, 150, angle - 0.04, 'rgba(18, 36, 62, 0.20)', 'rgba(6, 14, 28, 0.06)', 0.65);
-
-        // 3. The Galactic Center Bulge & Nucleus (Sagittarius Region)
-        // Soft warm peach/amber core glow (realistic, not neon)
-        drawNebulaCloud(w * 0.65, h * 0.40, 380, 190, angle, 'rgba(215, 175, 125, 0.28)', 'rgba(150, 105, 65, 0.14)', 0.9);
-        drawNebulaCloud(w * 0.65, h * 0.40, 220, 110, angle, 'rgba(235, 200, 160, 0.34)', 'rgba(185, 135, 90, 0.18)', 0.95);
-        drawNebulaCloud(w * 0.65, h * 0.40, 110, 60, angle, 'rgba(245, 225, 195, 0.42)', 'rgba(210, 170, 125, 0.22)', 1.0);
-
-        // 4. Interstellar Dark Absorption Lanes (The Great Rift / 暗星云裂缝带)
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-out';
-        for (let i = 0; i < 22; i++) {
-            const rx = 80 + Math.random() * 120;
-            const ry = 22 + Math.random() * 40;
-            const t = (i / 22) * 0.7 + 0.25;
-            const cx = w * t + (Math.random() - 0.5) * 60;
-            const cy = h * (0.85 - t * 0.7) + (Math.random() - 0.5) * 40;
-            const cloudAngle = angle + (Math.random() - 0.5) * 0.3;
-
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(cloudAngle);
-            ctx.globalAlpha = 0.32 + Math.random() * 0.3;
-            const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
-            grad.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
-            grad.addColorStop(0.55, 'rgba(0, 0, 0, 0.35)');
-            grad.addColorStop(1, 'transparent');
-            ctx.fillStyle = grad;
-            ctx.scale(1, ry / rx);
-            ctx.beginPath();
-            ctx.arc(0, 0, rx, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
-        ctx.restore();
-
-        // 5. Tens of thousands of microscopic stellar dust grains (Unresolved Milky Way Stars)
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
-        const numMicroStars = 12000;
-        for (let i = 0; i < numMicroStars; i++) {
-            const t = Math.random();
-            const baseX = w * (0.1 + t * 0.85);
-            const baseY = h * (0.85 - t * 0.75);
-
-            // Perpendicular spread (Gaussian approximation)
-            const spread = (Math.random() - 0.5) + (Math.random() - 0.5) + (Math.random() - 0.5);
-            const dist = spread * (75 + Math.sin(t * Math.PI) * 95);
-            const perpAngle = angle + Math.PI / 2;
-
-            const px = baseX + Math.cos(perpAngle) * dist;
-            const py = baseY + Math.sin(perpAngle) * dist;
-
-            if (px < 0 || px >= w || py < 0 || py >= h) continue;
-
-            const brightness = Math.random();
-            const radius = brightness > 0.97 ? (Math.random() * 1.0 + 0.6) : (Math.random() * 0.5 + 0.25);
-            const alpha = brightness > 0.97 ? (0.35 + Math.random() * 0.35) : (0.06 + Math.random() * 0.2);
-
-            ctx.fillStyle = brightness > 0.85 ? `rgba(255, 248, 230, ${alpha})` : `rgba(210, 222, 255, ${alpha})`;
-            ctx.beginPath();
-            ctx.arc(px, py, radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.restore();
-
-        const tex = new THREE.CanvasTexture(cv);
-        tex.minFilter = THREE.LinearFilter;
-        tex.magFilter = THREE.LinearFilter;
-
-        // Create deep background plane covering camera frustum
-        const planeGeo = new THREE.PlaneGeometry(160, 95);
-        const planeMat = new THREE.MeshBasicMaterial({
-            map: tex,
+        // Material with tuned opacity & tone so typography is high-contrast and crystal clear
+        const sphereMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
             transparent: true,
-            opacity: 0.68,
+            opacity: 0.70,
             depthWrite: false
         });
-        const mesh = new THREE.Mesh(planeGeo, planeMat);
-        mesh.position.set(0, 0, -42);
-        engine.scene.add(mesh);
-        engine.milkyWayMesh = mesh;
+
+        const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+
+        // Astronomical alignment:
+        // Position the luminous galactic core (Sagittarius region) toward the upper-right (behind Astrolabe)
+        // Tilt the Galactic plane across the sky
+        sphereMesh.rotation.x = 0.28;
+        sphereMesh.rotation.y = -Math.PI * 0.48;
+        sphereMesh.rotation.z = 0.38;
+
+        engine.scene.add(sphereMesh);
+        engine.milkyWayMesh = sphereMesh;
+
+        // 2. Load authentic ESO / Serge Brunier GigaGalaxy 360 real photograph
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('images/milkyway-galaxy.jpg', function (tex) {
+            tex.minFilter = THREE.LinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            sphereMat.map = tex;
+            sphereMat.needsUpdate = true;
+        }, undefined, function (err) {
+            console.warn('Real Milky Way texture load issue:', err);
+        });
     }
 
     // ========================================================
@@ -832,6 +743,13 @@
 
         // Scroll Interpolation
         engine.scrollProgress += (engine.targetScrollProgress - engine.scrollProgress) * 0.05;
+
+        // Authentic Milky Way Celestial Sphere Motion (Real Cosmic Parallax)
+        if (engine.milkyWayMesh) {
+            engine.milkyWayMesh.rotation.y -= 0.0001;
+            engine.milkyWayMesh.rotation.x = 0.28 + (-engine.mouse.y * 0.05);
+            engine.milkyWayMesh.rotation.z = 0.38 + (engine.mouse.x * 0.05) + (engine.scrollProgress * 0.2);
+        }
 
         // 2. Astrolabe Rotation & Parallax
         if (engine.astrolabeGroup) {

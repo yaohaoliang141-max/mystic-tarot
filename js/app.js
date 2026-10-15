@@ -217,11 +217,17 @@
             if (systemPromptInput) systemPromptInput.value = cfg.systemPrompt || DEFAULT_AI_CONFIG.systemPrompt;
             if (statusBox) statusBox.style.display = 'none';
 
-            if (modal) modal.style.display = 'flex';
+            if (modal) {
+                modal.style.display = 'flex';
+                const content = modal.querySelector('.modal-content');
+                if (content) content.scrollTop = 0;
+                document.body.classList.add('modal-open');
+            }
         }
 
         function closeModal() {
             if (modal) modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
         }
 
         if (openNavBtn) openNavBtn.addEventListener('click', openModal);
@@ -521,7 +527,12 @@
                 c.classList.add('disabled');
             });
             const revealBtn = $('#reveal-btn');
-            if (revealBtn) revealBtn.style.display = '';
+            if (revealBtn) {
+                revealBtn.style.display = '';
+                setTimeout(function () {
+                    revealBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 150);
+            }
         }
     }
 
@@ -547,6 +558,184 @@
                 '</div>';
             container.appendChild(div);
         });
+    }
+
+    // ---- Direct Verdict & Core Unambiguous Answer Generator ----
+    function calculateVerdictData() {
+        const cards = state.readingCards;
+        if (!cards || !cards.length) return null;
+
+        const spread = window.TarotSpreads[state.selectedSpread] || { name: '塔罗占卜' };
+        const category = state.selectedCategory || 'general';
+
+        // Key Outcome card
+        let outcomeCard = cards[cards.length - 1];
+        if (state.selectedSpread === 'three' && cards.length >= 3) {
+            outcomeCard = cards[2];
+        } else if (state.selectedSpread === 'love' && cards.length >= 5) {
+            outcomeCard = cards[4];
+        } else if (state.selectedSpread === 'cross' && cards.length >= 10) {
+            outcomeCard = cards[9];
+        }
+
+        const total = cards.length;
+        const reversedCount = cards.filter(function (c) { return c.isReversed; }).length;
+
+        const highAuspiciousIds = [0, 1, 3, 6, 7, 8, 10, 14, 17, 19, 21];
+        const severeIds = [13, 15, 16];
+
+        let score = 50;
+
+        cards.forEach(function (sc) {
+            let cardScore = 10;
+            if (!sc.card.suit) {
+                if (severeIds.indexOf(sc.card.id) !== -1) {
+                    cardScore = sc.isReversed ? -8 : -20;
+                } else if (highAuspiciousIds.indexOf(sc.card.id) !== -1) {
+                    cardScore = sc.isReversed ? 6 : 22;
+                } else {
+                    cardScore = sc.isReversed ? -2 : 12;
+                }
+            } else {
+                if (sc.card.suit === 'swords') {
+                    cardScore = sc.isReversed ? 2 : -6;
+                } else if (sc.card.suit === 'cups') {
+                    cardScore = sc.isReversed ? 3 : 14;
+                } else if (sc.card.suit === 'pentacles') {
+                    cardScore = sc.isReversed ? 2 : 13;
+                } else if (sc.card.suit === 'wands') {
+                    cardScore = sc.isReversed ? 4 : 14;
+                }
+            }
+            if (sc.isReversed) cardScore -= 6;
+            score += cardScore;
+        });
+
+        score = Math.max(12, Math.min(95, Math.round((score / (total * 25 + 50)) * 100)));
+
+        let tone = 'neutral';
+        let statusTag = '【平 · 静观待变】';
+        let statusDesc = '气运交织 · 存乎一心';
+
+        if (score >= 76) {
+            tone = 'great';
+            statusTag = '【大吉 · 势不可挡】';
+            statusDesc = '吉曜当空 · 能量圆满畅达';
+        } else if (score >= 58) {
+            tone = 'good';
+            statusTag = '【吉 · 稳步向上】';
+            statusDesc = '顺风扬帆 · 渐入佳境';
+        } else if (score >= 45) {
+            tone = 'balance';
+            statusTag = '【突破 · 拨云见日】';
+            statusDesc = '转折将至 · 破除迷局';
+        } else if (score >= 32) {
+            tone = 'caution';
+            statusTag = '【审慎 · 防微杜渐】';
+            statusDesc = '暗礁潜藏 · 宜守不宜燥';
+        } else {
+            tone = 'rethink';
+            statusTag = '【逆风 · 守正待时】';
+            statusDesc = '能量重组 · 沉潜蓄力';
+        }
+
+        let directAnswer = '';
+        const outcomeOrientation = outcomeCard.isReversed ? '逆位' : '正位';
+
+        if (category === 'love') {
+            if (score >= 58) {
+                directAnswer = `**核心答复：大势顺遂，良缘可期。** 终局受「${outcomeCard.card.nameCN}（${outcomeOrientation}）」守护，双方心意正在加速同频，前期的猜疑与阻滞正在消散。只要坦诚沟通、给予彼此笃定的信任，关系将迎来实质性的升温与承诺。`;
+            } else if (score >= 45) {
+                directAnswer = `**核心答复：正逢关键转折，沟通决定走向。** 终局显现「${outcomeCard.card.nameCN}」，表明关系并未定死，契机仍存。关键在于打破相互试探与被动等待，直面现实层面的沟通盲区，真诚胜过一切技巧。`;
+            } else {
+                directAnswer = `**核心答复：暂缓执念强求，给彼此缓冲空间。** 牌阵受「${outcomeCard.card.nameCN}（${outcomeOrientation}）」阻滞，当下存在温差或心理防御；切忌步步紧逼、情绪化对峙或索要承诺，先理顺自我安全感与边界才是破局良方。`;
+            }
+        } else if (category === 'career') {
+            if (score >= 58) {
+                directAnswer = `**核心答复：天时已至，果断推进！** 终局牌「${outcomeCard.card.nameCN}」象征正向动能与突破，当前所谋之事大有可为。摒弃无谓的内耗犹豫，集中优势资源落地执行，必有丰硕斩获。`;
+            } else if (score >= 45) {
+                directAnswer = `**核心答复：稳扎稳打，注重细节把控。** 终局落在「${outcomeCard.card.nameCN}」，提示方向正确，但需理顺协作链条或流程隐患；不宜盲目扩张战线，稳固现有基本盘方能谋求进阶。`;
+            } else {
+                directAnswer = `**核心答复：宜守不宜攻，防范暗礁风险。** 牌阵呈现抗阻能量，终局「${outcomeCard.card.nameCN}」提醒变数暗藏；现阶段切忌盲目跳槽、激进投资或意气用事，优先做好风控与备份方案。`;
+            }
+        } else if (category === 'wealth') {
+            if (score >= 58) {
+                directAnswer = `**核心答复：财气聚拢，收益向好。** 「${outcomeCard.card.nameCN}」带来正向滋养，财务状况呈现健康回暖态势。坚持稳健价值导向，适时落袋为安。`;
+            } else {
+                directAnswer = `**核心答复：捂紧钱包，严控盲目支出。** 终局牌「${outcomeCard.card.nameCN}」提示现金流或投机风险，当前不宜加杠杆或冲动消费，保守储蓄防御为上计。`;
+            }
+        } else {
+            if (score >= 58) {
+                directAnswer = `**核心答复：吉曜高照，所问之事明确向好。** 核心指引落在「${outcomeCard.card.nameCN}（${outcomeOrientation}）」，你心中的直觉与努力方向是正确的，宇宙正提供有力推力，顺势而为即可达成所愿。`;
+            } else if (score >= 45) {
+                directAnswer = `**核心答复：变局浮现，主动破除滞碍。** 「${outcomeCard.card.nameCN}」昭示转机窗口已打开，切莫因过度忧虑而按兵不动，主动迈出一步即可带动全盘活络。`;
+            } else {
+                directAnswer = `**核心答复：沉潜修整，莫逆势硬碰。** 当前处于能量调整期，终局「${outcomeCard.card.nameCN}」提示以退为进；把精力收回到自身状态的修补与积累上，静待时机反转。`;
+            }
+        }
+
+        let yiAdvice = [];
+        let jiAdvice = [];
+
+        if (score >= 58) {
+            yiAdvice = ['果断执行既定计划', '主动表达、积极向外联结'];
+            jiAdvice = ['犹豫摇摆错失先机', '盲目自满忽视细节'];
+        } else if (score >= 45) {
+            yiAdvice = ['抓大放小，单点突破', '倾听第三方的客观反馈'];
+            jiAdvice = ['情绪化对峙或意气用事', '把希望完全寄托于外部'];
+        } else {
+            yiAdvice = ['稳守底线，保存实力与资金', '反思复盘，排查底层漏洞'];
+            jiAdvice = ['孤注一掷或病急乱投医', '沉溺于内耗与无谓纠缠'];
+        }
+
+        return {
+            score: score,
+            tone: tone,
+            statusTag: statusTag,
+            statusDesc: statusDesc,
+            directAnswer: directAnswer,
+            yiAdvice: yiAdvice,
+            jiAdvice: jiAdvice,
+            outcomeCard: outcomeCard
+        };
+    }
+
+    function renderDirectVerdict() {
+        const box = $('#reading-verdict-box');
+        if (!box) return;
+
+        const data = calculateVerdictData();
+        if (!data) {
+            box.innerHTML = '';
+            return;
+        }
+
+        box.innerHTML =
+            '<div class="verdict-banner-inner">' +
+                '<div class="verdict-header">' +
+                    '<span class="verdict-title-tag">✦ 宇宙决断 · 核心答复 ✦</span>' +
+                    '<div class="verdict-status-pill tone-' + data.tone + '">' +
+                        '<span class="verdict-status-text">' + data.statusTag + '</span>' +
+                        '<span class="verdict-status-sub">' + data.statusDesc + '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="verdict-main-box">' +
+                    '<div class="verdict-answer-text">' + renderMarkdown(data.directAnswer) + '</div>' +
+                '</div>' +
+                '<div class="verdict-actions-row">' +
+                    '<div class="verdict-action-card yi">' +
+                        '<span class="action-label">✨ 【宜】行动指引</span>' +
+                        '<span class="action-desc">' + data.yiAdvice.join(' · ') + '</span>' +
+                    '</div>' +
+                    '<div class="verdict-action-card ji">' +
+                        '<span class="action-label">⚠️ 【忌】防范避坑</span>' +
+                        '<span class="action-desc">' + data.jiAdvice.join(' · ') + '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="verdict-scroll-hint">' +
+                    '<span>👇 牌面下方已直接为您呈现详细推演与解说，无需点击牌面即可直接阅读</span>' +
+                '</div>' +
+            '</div>';
     }
 
     // ---- Reveal Reading ----
@@ -585,7 +774,8 @@
                         '<span class="card-name-cn">' + sc.card.nameCN + '</span>' +
                         '<span class="card-name-en">' + sc.card.name + '</span>' +
                         '<span class="card-orientation ' + (sc.isReversed ? 'card-reversed' : 'card-upright') + '">' + (sc.isReversed ? '逆位' : '正位') + '</span>' +
-                    '</div>';
+                    '</div>' +
+                    '<div class="card-tap-hint">点击看单牌释义 ↗</div>';
 
                 (function (selectedCard, position) {
                     wrapper.addEventListener('click', function () {
@@ -596,6 +786,9 @@
                 resultSpread.appendChild(wrapper);
             });
         }
+
+        // Render Instant Core Verdict right beneath cards (No clicking needed)
+        renderDirectVerdict();
 
         // Determine AI or Classic Reading
         const aiContainer = $('#ai-reading-container');
@@ -701,12 +894,17 @@
             `- 疑惑/具体问题：${state.question ? state.question : '（未提供具体问题，请进行全面运势指引）'}\n` +
             `- 所选牌阵：${spread.name}（${spread.description}）\n\n` +
             `抽取的牌面排布：\n${cardsDesc}\n\n` +
-            `请以塔罗导师的口吻，结构清晰、具有深度洞察力地完成本次解盘，需包含：\n` +
-            `1. 牌阵核心能量与当下困局洞察\n` +
-            `2. 逐牌深度解析（结合其所在牌阵位置的特殊含义与正逆位能量）\n` +
-            `3. 牌与牌之间的内在呼应与生克流转\n` +
-            `4. 给求问者的具体行动指引与灵性寄语\n` +
-            `语言风格既要有神秘学的诗意与穿透力，也要提供切实的行动建议。`;
+            `请以塔罗导师的口吻，结构清晰、具有深度洞察力地完成本次解盘，严格按以下模块输出：\n` +
+            `### ✦ 核心判定与明确答复 ✦\n` +
+            `- **大势定性判定**：给出明确结论（如【大吉 · 势不可挡】、【吉 · 稳步向上】、【突破 · 拨云见日】、【审慎 · 守正待时】等）\n` +
+            `- **直接回答**：不模棱两可，用 2-3 句话直达答案，正面回答求问者的核心问题与发展走向！\n` +
+            `- **行动锦囊**：明确列出【宜】与【忌】。\n\n` +
+            `### ✦ 逐牌深度解析 ✦\n` +
+            `结合每个牌位代表的象征意义与正逆位能量，深度剖析。\n\n` +
+            `### ✦ 综合能量流向与推演 ✦\n` +
+            `分析牌与牌之间的内在呼应、制约与事态动态演进。\n\n` +
+            `### ✦ 灵性寄语 ✦\n` +
+            `给求问者的最终温暖寄语。`;
 
         const messages = [
             { role: 'system', content: cfg.systemPrompt || DEFAULT_AI_CONFIG.systemPrompt },
@@ -911,7 +1109,7 @@
         }).join('');
     }
 
-    // ---- Card Detail Modal ----
+    // ---- Card Detail Modal (Traditional/Offline Meaning Only, No AI) ----
     function showCardDetail(sc, position) {
         const modal = $('#card-detail-modal');
         const body = $('#modal-body');
@@ -924,7 +1122,7 @@
         if (category !== 'general' && data[category]) {
             categoryReading =
                 '<div class="modal-section">' +
-                    '<h4>🎯 ' + getCategoryName(category) + '解读</h4>' +
+                    '<h4>🎯 ' + getCategoryName(category) + '专项指引</h4>' +
                     '<p>' + data[category] + '</p>' +
                 '</div>';
         }
@@ -937,34 +1135,41 @@
         }
 
         body.innerHTML =
-            '<div class="modal-emoji">' + sc.card.emoji + '</div>' +
+            '<div class="modal-emoji"' + (sc.isReversed ? ' style="transform: rotate(180deg);"' : '') + '>' + sc.card.emoji + '</div>' +
             '<h3>' + sc.card.nameCN + '</h3>' +
             '<p class="modal-card-en">' + sc.card.name + (sc.card.numeral ? ' · ' + sc.card.numeral : '') + '</p>' +
-            '<span class="modal-orientation ' + (sc.isReversed ? 'card-reversed' : 'card-upright') + '">' + (sc.isReversed ? '🔄 逆位' : '✨ 正位') + '</span>' +
+            '<span class="modal-orientation ' + (sc.isReversed ? 'card-reversed' : 'card-upright') + '">' + (sc.isReversed ? '🔄 逆位能量' : '✨ 正位能量') + '</span>' +
             '<div class="modal-section">' +
-                '<h4>📍 位置：' + position.name + '</h4>' +
-                '<p>' + (position.description || '') + '</p>' +
+                '<h4>📍 牌位隐喻：' + position.name + '</h4>' +
+                '<p>' + (position.description || '当前位阶能量象征') + '</p>' +
             '</div>' +
             '<div class="modal-section">' +
-                '<h4>🔮 牌义解读</h4>' +
+                '<h4>🔮 传统牌面本义</h4>' +
                 '<p>' + (data.meaning || '') + '</p>' +
             '</div>' +
             categoryReading +
             '<div class="modal-section">' +
-                '<h4>💡 建议</h4>' +
+                '<h4>💡 行动与心境建议</h4>' +
                 '<p>' + (data.advice || '') + '</p>' +
             '</div>' +
             '<div class="modal-section">' +
-                '<h4>🏷️ 关键词</h4>' +
+                '<h4>🏷️ 核心关键词</h4>' +
                 '<div class="modal-keywords">' + keywordsHtml + '</div>' +
             '</div>';
 
         modal.style.display = 'flex';
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) modalContent.scrollTop = 0;
+        document.body.classList.add('modal-open');
 
         const closeBtn = modal.querySelector('.modal-close');
         const overlay = modal.querySelector('.modal-overlay');
 
-        function closeModal() { modal.style.display = 'none'; }
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.removeEventListener('keydown', escHandler);
+        }
 
         if (closeBtn) closeBtn.onclick = closeModal;
         if (overlay) overlay.onclick = closeModal;
@@ -972,7 +1177,6 @@
         function escHandler(e) {
             if (e.key === 'Escape') {
                 closeModal();
-                document.removeEventListener('keydown', escHandler);
             }
         }
         document.addEventListener('keydown', escHandler);
@@ -986,23 +1190,42 @@
         const spread = window.TarotSpreads[state.selectedSpread];
         if (!spread) return;
 
-        let html = '<h3>✨ 经典牌义综合解读 ✨</h3>';
+        let html =
+            '<div class="classic-reading-header">' +
+                '<h3>📜 牌阵逐牌深析与流向推演</h3>' +
+                '<p class="classic-reading-sub">无需点开牌面，以下已为您完整呈现各位置象征与全盘综合启示</p>' +
+            '</div>';
 
         state.readingCards.forEach(function (sc, i) {
             const pos = spread.positions[i] || { name: '位置' + (i + 1), description: '' };
             const data = sc.isReversed ? sc.card.reversed : sc.card.upright;
             const orientation = sc.isReversed ? '逆位' : '正位';
+            const category = state.selectedCategory;
+
+            let categoryDetail = '';
+            if (category !== 'general' && data[category]) {
+                categoryDetail =
+                    '<div class="reading-category-tip">' +
+                        '<strong>🎯 ' + getCategoryName(category) + '洞察：</strong>' + data[category] +
+                    '</div>';
+            }
 
             html +=
                 '<div class="reading-section">' +
-                    '<h4>' + pos.name + '：' + sc.card.nameCN + '（' + orientation + '）</h4>' +
-                    '<p>' + (pos.description ? pos.description + '——' : '') + (data.meaning || '') + '</p>' +
+                    '<div class="reading-section-title">' +
+                        '<span class="reading-section-num">' + (i + 1) + '</span>' +
+                        '<h4>' + pos.name + '：' + sc.card.nameCN + ' · ' + orientation + ' (' + sc.card.emoji + ')</h4>' +
+                    '</div>' +
+                    '<p class="reading-pos-desc">📍 <strong>位阶代表：</strong>' + (pos.description || '') + '</p>' +
+                    '<p class="reading-card-meaning">🔮 <strong>牌义推演：</strong>' + (data.meaning || '') + '</p>' +
+                    categoryDetail +
+                    '<p class="reading-card-advice">💡 <strong>行动建议：</strong>' + (data.advice || '') + '</p>' +
                 '</div>';
         });
 
         html +=
-            '<div class="reading-section">' +
-                '<h4>🌟 总结启示</h4>' +
+            '<div class="reading-section reading-summary-section">' +
+                '<h4>🌟 命盘流向终局总结</h4>' +
                 '<p>' + generateSummary() + '</p>' +
             '</div>';
 

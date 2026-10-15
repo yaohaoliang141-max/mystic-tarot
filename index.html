@@ -258,12 +258,10 @@
                 <p id="result-question" class="page-desc"></p>
             </div>
             <div id="result-spread" class="result-spread"></div>
-            <div id="card-detail-modal" class="card-detail-modal" style="display:none;">
-                <div class="modal-overlay"></div>
-                <div class="modal-content">
-                    <button class="modal-close">✕</button>
-                    <div id="modal-body" class="modal-body"></div>
-                </div>
+
+            <!-- Core Verdict Banner (Immediate answer right below cards, no click needed) -->
+            <div id="reading-verdict-box" class="reading-verdict-box"></div>
+
             <!-- AI Tarot Master Reading Container -->
             <div id="ai-reading-container" class="ai-reading-container"></div>
 
@@ -345,6 +343,15 @@
             </div>
         </section>
     </main>
+
+    <!-- Traditional Card Detail Modal (Offline/Traditional meaning only, no AI) -->
+    <div id="card-detail-modal" class="card-detail-modal" style="display:none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" aria-label="关闭详情">✕</button>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
 
     <!-- AI Settings Modal -->
     <div id="settings-modal" class="modal" style="display:none;">

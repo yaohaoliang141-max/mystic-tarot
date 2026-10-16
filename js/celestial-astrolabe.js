@@ -57,10 +57,10 @@
 
         // Milky Way & Starfield Systems (Authentic ESO Real Photography System)
         milkyWayMesh: null,
-        galaxyYaw: -Math.PI * 0.48,
+        galaxyYaw: Math.PI * 0.45,
         galaxyPitch: 0.28,
-        galaxyRoll: 0.38,
-        targetGalaxyYaw: -Math.PI * 0.48,
+        galaxyRoll: 0.22,
+        targetGalaxyYaw: Math.PI * 0.45,
         targetGalaxyPitch: 0.28,
         isDraggingGalaxy: false,
         dragStartX: 0,
@@ -525,15 +525,30 @@
         });
     }
 
+    // Helper: Circular Soft Starlight Sprite Generator (eliminates default square quad artifacts)
+    function createStarlightTexture() {
+        const cv = document.createElement('canvas');
+        cv.width = 32;
+        cv.height = 32;
+        const ctx = cv.getContext('2d');
+        const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 15);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        grad.addColorStop(0.25, 'rgba(250, 235, 205, 0.85)');
+        grad.addColorStop(0.65, 'rgba(212, 175, 55, 0.25)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 32, 32);
+        return new THREE.CanvasTexture(cv);
+    }
+
     // ========================================================
-    // SPATIAL STARFIELD (深空星系 - 低对比度与柔和微光)
+    // SPATIAL STARFIELD (深空纤细星芒 - 柔和微光星宿)
     // ========================================================
     function createSpatialStarfield() {
-        const count = engine.isMobile ? 700 : 1400;
+        const count = engine.isMobile ? 90 : 160;
         const positions = new Float32Array(count * 3);
         const originalPositions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
-        const sizes = new Float32Array(count);
 
         const cWhite = new THREE.Color(COLORS.starWhite);
         const cWarm = new THREE.Color(COLORS.starWarm);
@@ -541,9 +556,10 @@
 
         for (let i = 0; i < count; i++) {
             const idx = i * 3;
-            const x = (Math.random() - 0.5) * 48;
-            const y = (Math.random() - 0.5) * 34;
-            const z = -65 + Math.random() * 68;
+            // Distribute in deep space background behind astrolabe
+            const x = (Math.random() - 0.5) * 44;
+            const y = (Math.random() - 0.5) * 30;
+            const z = -55 + Math.random() * 30; // Strictly distant (-55 to -25)
 
             positions[idx] = x;
             positions[idx + 1] = y;
@@ -555,28 +571,27 @@
 
             const randColor = Math.random();
             let c = cWhite;
-            if (randColor < 0.4) c = cWarm;
-            else if (randColor > 0.85) c = cViolet;
+            if (randColor < 0.45) c = cWarm;
+            else if (randColor > 0.82) c = cViolet;
 
             colors[idx] = c.r;
             colors[idx + 1] = c.g;
             colors[idx + 2] = c.b;
-
-            // Delicate pinpoint star sizes
-            sizes[i] = 0.8 + Math.random() * 1.4;
         }
 
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-        // Soft Point Material with lower opacity
+        // Use circular starlight texture to completely eliminate square quad artifacts
         const starMat = new THREE.PointsMaterial({
-            size: 1.4,
+            map: createStarlightTexture(),
+            size: 0.9,
             vertexColors: true,
             transparent: true,
-            opacity: 0.45,
+            opacity: 0.65,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
             sizeAttenuation: true
         });
 
@@ -592,16 +607,16 @@
     // FOREGROUND DUST MOTES (柔和微光浮尘)
     // ========================================================
     function createDustMotes() {
-        const count = engine.isMobile ? 20 : 45;
+        const count = engine.isMobile ? 12 : 24;
         const pos = new Float32Array(count * 3);
         const geo = new THREE.BufferGeometry();
         engine.dustData = [];
 
         for (let i = 0; i < count; i++) {
             const idx = i * 3;
-            const x = (Math.random() - 0.5) * 18;
-            const y = (Math.random() - 0.5) * 12;
-            const z = 1.0 + Math.random() * 5.0;
+            const x = (Math.random() - 0.5) * 16;
+            const y = (Math.random() - 0.5) * 10;
+            const z = 1.0 + Math.random() * 4.0;
 
             pos[idx] = x;
             pos[idx + 1] = y;
@@ -617,10 +632,13 @@
 
         geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         const mat = new THREE.PointsMaterial({
+            map: createStarlightTexture(),
             color: COLORS.goldChampagne,
-            size: 1.2,
+            size: 0.65,
             transparent: true,
-            opacity: 0.28,
+            opacity: 0.35,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
             sizeAttenuation: true
         });
 
@@ -1031,7 +1049,7 @@
         window.addEventListener('dblclick', e => {
             const target = e.target;
             if (target.closest('button') || target.closest('input') || target.closest('a')) return;
-            engine.targetGalaxyYaw = -Math.PI * 0.48;
+            engine.targetGalaxyYaw = Math.PI * 0.45;
             engine.targetGalaxyPitch = 0.28;
         });
 

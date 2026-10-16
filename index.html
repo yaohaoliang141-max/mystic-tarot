@@ -3,34 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>神秘塔罗 | Mystic Tarot - 在线塔罗牌占卜</title>
-    <meta name="description" content="在线塔罗牌占卜，探索命运的奥秘。实时3D古典星象仪沉浸式空间，支持单牌、三牌、凯尔特十字等经典牌阵，内置完整78张塔罗牌与AI大模型灵性导师深度解盘。">
-    <meta name="theme-color" content="#06040b">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
+    <title>神秘塔罗 | Mystic Tarot - 现代深空灵性命盘推演</title>
+    <meta name="description" content="在线塔罗牌全息推演系统。流转于真实欧洲南方天文台深空螺旋星云与银河天球，融合荣格原型心理学与大模型灵性导师，支持经典四维牌阵与无尽深度追问。">
+    <meta name="theme-color" content="#030306">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Ccircle cx='24' cy='24' r='22' stroke='%23cdbb96' stroke-width='1.2' stroke-dasharray='2 3' opacity='0.4'/%3E%3Ccircle cx='24' cy='24' r='17' stroke='%23cdbb96' stroke-width='1.2' opacity='0.8'/%3E%3Cpath d='M24 7 A17 17 0 0 0 24 41 A13 13 0 0 1 24 7 Z' fill='%23cdbb96' fill-opacity='0.25' stroke='%23cdbb96' stroke-width='0.8'/%3E%3Cpath d='M24 6 L26.5 21.5 L42 24 L26.5 26.5 L24 42 L21.5 26.5 L6 24 L21.5 21.5 Z' fill='%23ece3d2' stroke='%23826e47' stroke-width='0.6'/%3E%3Ccircle cx='24' cy='24' r='2.2' fill='%23ffffff'/%3E%3C/svg%3E">
+    
+    <!-- Open Source Fonts via Google Fonts / Fontsource -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=20261016_real_nebula_v4">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css?v=20261016_luxury_studio_v5">
 </head>
 <body>
     <!-- Real-time 3D Celestial Astrolabe Canvas -->
     <canvas id="celestial-canvas" class="celestial-canvas"></canvas>
 
-    <!-- Navigation -->
+    <!-- Navigation Bar -->
     <nav id="main-nav" class="main-nav">
         <div class="nav-container">
             <a href="#" class="nav-brand" data-page="landing">
-                <span class="brand-icon">🔮</span>
-                <span class="brand-text">神秘塔罗</span>
+                <span class="brand-mark-wrapper">
+                    <svg class="brand-logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.35"/>
+                        <circle cx="24" cy="24" r="16.5" stroke="currentColor" stroke-width="1.2" opacity="0.75"/>
+                        <line x1="24" y1="2" x2="24" y2="46" stroke="currentColor" stroke-width="0.75" stroke-opacity="0.2"/>
+                        <line x1="2" y1="24" x2="46" y2="24" stroke="currentColor" stroke-width="0.75" stroke-opacity="0.2"/>
+                        <path d="M 24 7.5 A 16.5 16.5 0 0 0 24 40.5 A 12.5 12.5 0 0 1 24 7.5 Z" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
+                        <path d="M 24 6 L 26.5 21.5 L 42 24 L 26.5 26.5 L 24 42 L 21.5 26.5 L 6 24 L 21.5 21.5 Z" fill="url(#brandGoldGrad)" stroke="#faeed7" stroke-width="0.6"/>
+                        <circle cx="24" cy="24" r="2.2" fill="#ffffff"/>
+                        <defs>
+                            <linearGradient id="brandGoldGrad" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#fff5e3"/>
+                                <stop offset="0.45" stop-color="#d4c2a0"/>
+                                <stop offset="1" stop-color="#8f7a56"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </span>
+                <div class="brand-text-group">
+                    <span class="brand-name-cn">神秘塔罗</span>
+                    <span class="brand-name-en">MYSTIC TAROT</span>
+                </div>
             </a>
-            <button class="nav-toggle" id="nav-toggle" aria-label="切换导航">
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="切换导航菜单">
                 <span></span><span></span><span></span>
             </button>
+
             <div class="nav-links" id="nav-links">
-                <a href="#" class="nav-link active" data-page="landing">首页</a>
-                <a href="#" class="nav-link" data-page="meanings">牌义大全</a>
-                <a href="#" class="nav-link" data-page="about">关于</a>
-                <button type="button" id="open-settings-nav-btn" class="nav-btn-settings">⚙️ AI 密钥设置</button>
+                <a href="#" class="nav-link active" data-page="landing">
+                    <span>首页</span>
+                </a>
+                <a href="#" class="nav-link" data-page="meanings">
+                    <span>牌义大全</span>
+                </a>
+                <a href="#" class="nav-link" data-page="about">
+                    <span>关于</span>
+                </a>
+                <button type="button" id="open-settings-nav-btn" class="nav-btn-settings">
+                    <span class="nav-btn-indicator" id="nav-ai-indicator"></span>
+                    <span>AI 密钥配置</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -40,24 +74,32 @@
         <!-- Landing Page -->
         <section id="landing-page" class="page active">
             <div class="editorial-hero">
+                <!-- Dedicated Aperture for 3D Helix Nebula on Mobile -->
+                <div class="mobile-nebula-stage">
+                    <div class="interactive-hint-pill">
+                        <span class="hint-dot"></span>
+                        <span class="hint-text">拖拽 360° 漫游银河 · 旋转星云</span>
+                    </div>
+                </div>
+
                 <div class="hero-editorial-left">
                     <div class="editorial-metadata">
-                        <span class="meta-tag">ARCHIVE OF CELESTIAL MYSTERIES</span>
-                        <span class="meta-divider">·</span>
-                        <span class="meta-tag">VOL. I</span>
-                        <span class="meta-divider">·</span>
-                        <span class="meta-coords">LAT 31°14'N · LONG 121°29'E</span>
+                        <span class="meta-badge">
+                            <span class="meta-dot"></span>
+                            <span>CELESTIAL ARCHIVE · VOL. I</span>
+                        </span>
+                        <span class="meta-badge meta-coords">LAT 31°14'N · LONG 121°29'E</span>
                     </div>
 
                     <h1 class="editorial-title">
-                        <span class="title-eyebrow">MYSTIC TAROT</span>
+                        <span class="title-eyebrow">CONTEMPORARY OCCULT & COSMIC SANCTUARY</span>
                         <span class="title-main">神秘塔罗</span>
-                        <span class="title-sub">螺旋星云 · 命盘推演</span>
+                        <span class="title-sub">螺旋星云 · 命盘全息推演</span>
                     </h1>
 
-                    <p class="editorial-manifesto">
-                        “如其在上，如其在下。流转的深空螺旋星云与七十八张奥秘牌阵，映照潜意识深处早已写就的启示。”
-                    </p>
+                    <blockquote class="editorial-manifesto">
+                        <p>“如其在上，如其在下。流转的深空螺旋星云与七十八张奥秘牌阵，映照潜意识深处早已写就的启示。”</p>
+                    </blockquote>
 
                     <div class="hero-actions-row">
                         <button id="start-btn" class="btn btn-primary btn-editorial-start">
@@ -87,7 +129,6 @@
                 </div>
 
                 <div class="hero-editorial-right">
-                    <!-- Transparent window showing 3D Real Nebula with subtle interactive indicator -->
                     <div class="astrolabe-viewport-indicator">
                         <div class="interactive-hint-pill">
                             <span class="hint-dot"></span>
@@ -129,7 +170,7 @@
                         <h3>实时星盘推演</h3>
                         <span class="pillar-en">CHRONO-ASTROLOGY</span>
                     </div>
-                    <p>纯实时三维数学建模之古典星象仪，随鼠标动线流转倾斜，点击泛起星河涟漪，带来沉浸式心灵仪式感。</p>
+                    <p>纯实时三维数学建模之深空螺旋星云，随鼠标动线流转倾斜，点击泛起星河引力涟漪，带来沉浸式仪式感。</p>
                 </div>
             </div>
         </section>
@@ -139,47 +180,87 @@
             <div class="page-header">
                 <button class="btn-back" data-page="landing">← 返回</button>
                 <h2 class="page-title">✦ 选择牌阵 ✦</h2>
-                <p class="page-desc">选择一种适合你问题的牌阵</p>
+                <p class="page-desc">以直觉感知宇宙秩序，选择最契合当下境遇的推演阵法</p>
             </div>
             <div class="spread-options">
                 <div class="spread-card" data-spread="single">
-                    <div class="spread-card-glow"></div>
-                    <div class="spread-emoji">🎴</div>
-                    <h3>单牌占卜</h3>
-                    <p>抽取一张牌，获得简洁明了的指引</p>
+                    <div class="spread-glyph">
+                        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="16" cy="16" r="12" stroke-dasharray="2 2" stroke-opacity="0.4"/>
+                            <circle cx="16" cy="16" r="7"/>
+                            <circle cx="16" cy="16" r="2" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h3>单牌启示</h3>
+                    <p>抽取一张核心卡牌，获得当下最纯粹直接的行动指引与心境提点</p>
                     <div class="spread-meta">
                         <span class="card-count">1 张牌</span>
-                        <span class="difficulty">⭐</span>
+                        <div class="difficulty-dots">
+                            <span class="diff-dot active"></span>
+                            <span class="diff-dot"></span>
+                            <span class="diff-dot"></span>
+                        </div>
                     </div>
                 </div>
+
                 <div class="spread-card" data-spread="three">
-                    <div class="spread-card-glow"></div>
-                    <div class="spread-emoji">🎴🎴🎴</div>
+                    <div class="spread-glyph">
+                        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="8" cy="16" r="5"/>
+                            <circle cx="16" cy="16" r="5"/>
+                            <circle cx="24" cy="16" r="5"/>
+                            <line x1="13" y1="16" x2="19" y2="16" stroke-dasharray="1 1"/>
+                        </svg>
+                    </div>
                     <h3>时间之流</h3>
-                    <p>过去、现在与未来的连接</p>
+                    <p>过去因果、当下处境与未来趋势的能量连接，透视因缘流转</p>
                     <div class="spread-meta">
                         <span class="card-count">3 张牌</span>
-                        <span class="difficulty">⭐⭐</span>
+                        <div class="difficulty-dots">
+                            <span class="diff-dot active"></span>
+                            <span class="diff-dot active"></span>
+                            <span class="diff-dot"></span>
+                        </div>
                     </div>
                 </div>
+
                 <div class="spread-card" data-spread="love">
-                    <div class="spread-card-glow"></div>
-                    <div class="spread-emoji">💕</div>
-                    <h3>爱情占卜</h3>
-                    <p>探索你的情感世界与关系</p>
+                    <div class="spread-glyph">
+                        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M16 26 C8 18 4 12 8 7 A6 6 0 0 1 16 10 A6 6 0 0 1 24 7 C28 12 24 18 16 26 Z"/>
+                            <circle cx="16" cy="14" r="2" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h3>爱情相契</h3>
+                    <p>深入探寻彼此内心渴望、关系阻碍与长远可能性的五角情感命盘</p>
                     <div class="spread-meta">
                         <span class="card-count">5 张牌</span>
-                        <span class="difficulty">⭐⭐</span>
+                        <div class="difficulty-dots">
+                            <span class="diff-dot active"></span>
+                            <span class="diff-dot active"></span>
+                            <span class="diff-dot"></span>
+                        </div>
                     </div>
                 </div>
+
                 <div class="spread-card" data-spread="cross">
-                    <div class="spread-card-glow"></div>
-                    <div class="spread-emoji">✝️</div>
+                    <div class="spread-glyph">
+                        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="16" cy="16" r="13" stroke-opacity="0.3"/>
+                            <line x1="16" y1="3" x2="16" y2="29"/>
+                            <line x1="3" y1="16" x2="29" y2="16"/>
+                            <rect x="12" y="12" width="8" height="8" rx="2"/>
+                        </svg>
+                    </div>
                     <h3>凯尔特十字</h3>
-                    <p>最经典的十牌阵，全面深入解读</p>
+                    <p>西方塔罗体系最经典十牌全息大阵，从潜意识底色到终局全维剖析</p>
                     <div class="spread-meta">
                         <span class="card-count">10 张牌</span>
-                        <span class="difficulty">⭐⭐⭐</span>
+                        <div class="difficulty-dots">
+                            <span class="diff-dot active"></span>
+                            <span class="diff-dot active"></span>
+                            <span class="diff-dot active"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -189,31 +270,33 @@
         <section id="question-page" class="page">
             <div class="page-header">
                 <button class="btn-back" data-page="spread">← 返回</button>
-                <h2 class="page-title">✦ 冥想你的问题 ✦</h2>
-                <p class="page-desc">在心中默念你想问的问题，让宇宙感应你的能量</p>
+                <h2 class="page-title">✦ 冥想你的困惑 ✦</h2>
+                <p class="page-desc">在心中凝聚意念，让潜意识的波长与深空星象形成同频共振</p>
             </div>
             <div class="question-form">
                 <div class="question-input-wrapper">
-                    <textarea id="question-text" class="question-textarea" placeholder="输入你的问题（可选）..." rows="3"></textarea>
+                    <textarea id="question-text" class="question-textarea" placeholder="输入心中困惑的具体问题（可选，例如：未来三个月事业方向如何突破？我和他的缘分走向？）..." rows="3"></textarea>
                 </div>
+
+                <span class="category-section-label">选择问题关注领域</span>
                 <div class="category-buttons">
-                    <span class="category-label">选择领域：</span>
                     <button class="category-btn active" data-category="general">
-                        <span class="cat-icon">🌌</span> 综合
+                        <span class="cat-icon">🌌</span> 综合运势
                     </button>
                     <button class="category-btn" data-category="love">
-                        <span class="cat-icon">❤️</span> 爱情
+                        <span class="cat-icon">❤️</span> 情感恋念
                     </button>
                     <button class="category-btn" data-category="career">
-                        <span class="cat-icon">💼</span> 事业
+                        <span class="cat-icon">💼</span> 事业功名
                     </button>
                     <button class="category-btn" data-category="health">
-                        <span class="cat-icon">🌿</span> 健康
+                        <span class="cat-icon">🌿</span> 身心疗愈
                     </button>
                     <button class="category-btn" data-category="wealth">
-                        <span class="cat-icon">💰</span> 财运
+                        <span class="cat-icon">💰</span> 财富财帛
                     </button>
                 </div>
+
                 <div class="ai-mode-bar">
                     <label class="ai-checkbox-label" title="开启后将使用大语言模型进行一对一个性化深度解盘">
                         <input type="checkbox" id="ai-mode-toggle" checked>
@@ -221,31 +304,37 @@
                         <span class="toggle-text">✨ 开启 AI 塔罗大师智能解盘</span>
                     </label>
                     <div id="ai-config-status" class="ai-config-status">
-                        <span id="ai-status-badge" class="badge badge-warning">未配置密钥 (使用经典牌义)</span>
+                        <span id="ai-status-badge" class="badge badge-warning">未配置密钥 (使用经典离线牌义)</span>
                         <button type="button" class="btn-text-link" id="quick-settings-btn">⚙️ 配置密钥</button>
                     </div>
                 </div>
-                <button id="begin-btn" class="btn btn-primary btn-glow">
-                    <span class="btn-text">开始抽牌</span>
-                    <span class="btn-icon">🃏</span>
-                </button>
+
+                <div style="text-align: center;">
+                    <button id="begin-btn" class="btn btn-primary btn-glow" style="width: 100%; max-width: 320px;">
+                        <span class="btn-text">开启推演 · 凭直觉抽牌</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </div>
             </div>
         </section>
 
         <!-- Card Reading Page -->
         <section id="reading-page" class="page">
             <div class="page-header">
-                <h2 class="page-title">✦ 选择你的牌 ✦</h2>
-                <p class="page-desc">凭直觉从牌堆中选择 <span id="cards-needed" class="highlight">3</span> 张牌</p>
+                <h2 class="page-title">✦ 抽取命定之牌 ✦</h2>
+                <p class="page-desc">屏息静气，凭直觉从牌堆中感召 <span id="cards-needed" class="highlight">3</span> 张牌</p>
             </div>
-            <div id="card-deck" class="card-deck"></div>
+            
             <div id="selected-area" class="selected-area">
-                <h3 class="selected-title">已选择的牌</h3>
+                <h3 class="selected-title">已感召的牌位</h3>
                 <div id="selected-cards" class="selected-cards"></div>
             </div>
-            <div style="text-align:center;">
-                <button id="reveal-btn" class="btn btn-primary btn-glow" style="display:none;">
-                    <span class="btn-text">揭示命运</span>
+
+            <div id="card-deck" class="card-deck"></div>
+
+            <div style="text-align:center; margin-top: 30px;">
+                <button id="reveal-btn" class="btn btn-primary btn-glow" style="display:none; padding: 16px 48px;">
+                    <span class="btn-text">揭示命盘天机</span>
                     <span class="btn-icon">✨</span>
                 </button>
             </div>
@@ -254,7 +343,7 @@
         <!-- Result Page -->
         <section id="result-page" class="page">
             <div class="page-header">
-                <h2 class="page-title">✦ 占卜结果 ✦</h2>
+                <h2 class="page-title">✦ 命盘推演结果 ✦</h2>
                 <p id="result-question" class="page-desc"></p>
             </div>
             <div id="result-spread" class="result-spread"></div>
@@ -271,8 +360,8 @@
                     <div class="chat-title-group">
                         <span class="chat-avatar">🔮</span>
                         <div>
-                            <h3>与 AI 塔罗大师深度追问</h3>
-                            <p class="chat-subtitle">对当前牌面有疑问？可随时向塔罗大师追问具体建议、发展走向或行动指南</p>
+                            <h3>与 AI 塔罗导师无尽追问</h3>
+                            <p class="chat-subtitle">对当前牌面有疑问？可随时向导师追问具体建议、发展走向或行动指南</p>
                         </div>
                     </div>
                 </div>
@@ -282,19 +371,20 @@
                     </div>
                 </div>
                 <div class="chat-input-row">
-                    <input type="text" id="chat-input" class="chat-input" placeholder="输入你想追问的问题（例如：那我下个月该如何应对？他和我的真实想法是什么？）..." autocomplete="off" />
+                    <input type="text" id="chat-input" class="chat-input" placeholder="输入你想追问的问题（例如：那我下个月该如何应对？这段关系的关键阻碍是什么？）..." autocomplete="off" />
                     <button type="button" id="chat-send-btn" class="btn btn-primary chat-send-btn">
                         <span>发送</span>
                         <span>✨</span>
                     </button>
                 </div>
             </div>
+
             <div class="result-actions">
                 <button id="share-btn" class="btn btn-secondary">
-                    <span>📋 复制结果</span>
+                    <span>📋 复制解析结果</span>
                 </button>
                 <button id="new-reading-btn" class="btn btn-primary">
-                    <span>🔮 重新占卜</span>
+                    <span>🔮 开启新推演</span>
                 </button>
             </div>
         </section>
@@ -302,15 +392,21 @@
         <!-- Card Meanings Page -->
         <section id="meanings-page" class="page">
             <div class="page-header">
-                <h2 class="page-title">✦ 塔罗牌义大全 ✦</h2>
-                <p class="page-desc">了解每一张塔罗牌的含义</p>
+                <h2 class="page-title">✦ 塔罗牌义全集 ✦</h2>
+                <p class="page-desc">七十八张奥秘牌义，涵盖正逆双极能量与人生全维度指引</p>
             </div>
+
+            <div class="meanings-search-bar">
+                <span class="search-icon-decor">🔍</span>
+                <input type="text" id="meanings-search-input" class="meanings-search-input" placeholder="搜索卡牌名称或核心关键词（如：愚者、爱情、突破）..." />
+            </div>
+
             <div class="meanings-filter">
                 <button class="filter-btn active" data-filter="major">大阿卡纳</button>
-                <button class="filter-btn" data-filter="wands">权杖</button>
-                <button class="filter-btn" data-filter="cups">圣杯</button>
-                <button class="filter-btn" data-filter="swords">宝剑</button>
-                <button class="filter-btn" data-filter="pentacles">星币</button>
+                <button class="filter-btn" data-filter="wands">权杖火象</button>
+                <button class="filter-btn" data-filter="cups">圣杯水象</button>
+                <button class="filter-btn" data-filter="swords">宝剑风象</button>
+                <button class="filter-btn" data-filter="pentacles">星币土象</button>
             </div>
             <div id="meanings-grid" class="meanings-grid"></div>
         </section>
@@ -319,29 +415,30 @@
         <section id="about-page" class="page">
             <div class="page-header">
                 <h2 class="page-title">✦ 关于神秘塔罗 ✦</h2>
+                <p class="page-desc">连接古典天体象征学与当代生成式人工智能的灵性圣所</p>
             </div>
             <div class="about-content">
                 <div class="about-card">
-                    <h3>🔮 什么是塔罗牌？</h3>
-                    <p>塔罗牌是一种古老的占卜工具，起源于15世纪的欧洲。一副标准的塔罗牌由78张牌组成：22张大阿卡纳牌代表人生的重大主题和灵性课题，56张小阿卡纳牌则反映日常生活中的各种情境。</p>
+                    <h3>🔮 什么是塔罗牌体系？</h3>
+                    <p>塔罗牌是一种跨越数个世纪的象征学系统，起源于15世纪欧洲。整套牌组由78张奥秘构成：22张大阿卡纳象征人类灵魂觉醒的原型旅途；56张小阿卡纳则对映火、水、风、土四象，映照生活琐细与能量变迁。</p>
                 </div>
                 <div class="about-card">
-                    <h3>🌟 如何使用？</h3>
-                    <p>1. 选择一种适合你的牌阵<br>2. 在心中冥想你的问题<br>3. 凭直觉选择牌面<br>4. 阅读解读，思考其中的启示</p>
+                    <h3>🌌 实时三维深空物理</h3>
+                    <p>网站背景基于欧洲南方天文台（ESO）与哈勃空间望远镜真实全景摄影构建。实时三维数学建模之螺旋星云（Helix Nebula）随观者动线流转倾斜，带来静谧、深邃而专注的沉浸式心理推演氛围。</p>
                 </div>
                 <div class="about-card">
-                    <h3>⚠️ 温馨提示</h3>
-                    <p>塔罗牌仅供娱乐和自我反思参考，不构成任何专业建议。重要决策请咨询相关专业人士。</p>
+                    <h3>🤖 荣格原型与大模型导师</h3>
+                    <p>结合心理学家卡尔·荣格的“共时性原则（Synchronicity）”与现代大语言模型。AI 塔罗导师不再机械枚举预设卡片词汇，而是统观全局牌位生克，为你提供直达本心、温和且具有实践性的指引。</p>
                 </div>
                 <div class="about-card">
-                    <h3>💻 开源项目</h3>
-                    <p>本项目完全开源，使用纯HTML/CSS/JavaScript构建，无需后端服务器。欢迎访问 GitHub 查看源代码、提出建议或贡献代码。</p>
+                    <h3>💻 开源与本地隐私安全</h3>
+                    <p>本项目完全开源，前端纯粹运行在你的本地浏览器中。所有大模型 API 密钥只留存于你的浏览器 LocalStorage，不经由任何第三方中间服务器存储，保障求问者的绝对心念隐私。</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Traditional Card Detail Modal (Offline/Traditional meaning only, no AI) -->
+    <!-- Traditional Card Detail Modal -->
     <div id="card-detail-modal" class="card-detail-modal" style="display:none;">
         <div class="modal-overlay"></div>
         <div class="modal-content">
@@ -359,7 +456,7 @@
                 <div class="settings-title-row">
                     <span class="settings-icon">⚙️</span>
                     <div>
-                        <h3>AI 塔罗占卜师 API 配置</h3>
+                        <h3>AI 灵性导师 API 配置</h3>
                         <p class="settings-subtitle">配置大语言模型 API Key，解锁灵性大模型深度解盘与多轮追问</p>
                     </div>
                 </div>
@@ -417,22 +514,23 @@
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Main Footer -->
     <footer class="main-footer">
         <div class="footer-content">
-            <p class="footer-brand">✨ 神秘塔罗 Mystic Tarot ✨</p>
-            <p class="footer-disclaimer">塔罗牌仅供娱乐参考，不构成任何实际建议</p>
+            <p class="footer-brand">✦ 神秘塔罗 MYSTIC TAROT ✦</p>
+            <p class="footer-disclaimer">塔罗牌仅供心理映射与自我反思参考，不构成任何现实决策之绝对定论</p>
             <p class="footer-links">
-                <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://github.com/yaohaoliang141-max/mystic-tarot" target="_blank" rel="noopener">GitHub</a>
                 <span>·</span>
-                <span>© 2026</span>
+                <span>Contemporary Studio Aesthetic © 2026</span>
             </p>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="js/three.min.js"></script>
-    <script src="js/tarot-data.js?v=20261016_real_nebula_v4"></script>
-    <script src="js/celestial-astrolabe.js?v=20261016_real_nebula_v4"></script>
-    <script src="js/app.js?v=20261016_real_nebula_v4"></script>
+    <script src="js/tarot-data.js?v=20261016_luxury_studio_v5"></script>
+    <script src="js/celestial-astrolabe.js?v=20261016_luxury_studio_v5"></script>
+    <script src="js/app.js?v=20261016_luxury_studio_v5"></script>
 </body>
 </html>

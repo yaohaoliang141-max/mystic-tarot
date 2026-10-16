@@ -119,9 +119,11 @@
 
         // Nav toggle (mobile)
         const toggle = $('#nav-toggle');
-        if (toggle) {
+        const navLinks = $('#nav-links');
+        if (toggle && navLinks) {
             toggle.addEventListener('click', function () {
-                $('#nav-links').classList.toggle('open');
+                toggle.classList.toggle('open');
+                navLinks.classList.toggle('open');
             });
         }
 
@@ -148,6 +150,8 @@
             link.classList.toggle('active', link.dataset.page === pageId);
         });
 
+        const toggle = $('#nav-toggle');
+        if (toggle) toggle.classList.remove('open');
         const navLinks = $('#nav-links');
         if (navLinks) navLinks.classList.remove('open');
 
@@ -180,14 +184,20 @@
     function updateAiBadgeStatus() {
         const cfg = getAiConfig();
         const badge = $('#ai-status-badge');
-        if (!badge) return;
+        const navIndicator = $('#nav-ai-indicator');
+        const hasKey = !!(cfg.apiKey && cfg.apiKey.trim().length > 0);
 
-        if (cfg.apiKey && cfg.apiKey.trim().length > 0) {
-            badge.className = 'badge badge-ready';
+        if (navIndicator) {
+            navIndicator.classList.toggle('configured', hasKey);
+        }
+
+        if (!badge) return;
+        if (hasKey) {
+            badge.className = 'badge badge-success';
             badge.textContent = `🤖 AI 已就绪 (${cfg.model || '已配Key'})`;
         } else {
             badge.className = 'badge badge-warning';
-            badge.textContent = '未配置密钥 (使用经典牌义)';
+            badge.textContent = '未配置密钥 (使用经典离线牌义)';
         }
     }
 
@@ -1009,13 +1019,38 @@
         const spread = window.TarotSpreads[state.selectedSpread];
         if (!spread) return;
 
+        const cards = state.readingCards;
+        const reversedCount = cards.filter(function (sc) { return sc.isReversed; }).length;
+
+        let verdictHeadline = '';
+        let verdictDesc = '';
+        if (reversedCount === 0) {
+            verdictHeadline = '【大吉 · 顺势而行】能量通达，前行明朗';
+            verdictDesc = '全盘皆为顺位光明之象，事态能量流向通畅无阻。信任直觉并坚定迈出步伐，当前是你凝聚意愿、创造突破的最佳契机。宜积极行动，忌优柔寡断。';
+        } else if (reversedCount < cards.length / 2) {
+            verdictHeadline = '【亨通 · 守正微调】主流向好，留心盲区';
+            verdictDesc = '核心主轴稳步向前，偶现逆位牌提示需要检视细节中的惯性思维或隐性阻力。保持自省与灵活，对局部策略做针对性调优即可稳步达成所愿。';
+        } else if (reversedCount === cards.length) {
+            verdictHeadline = '【沉潜 · 审慎重构】阻力显现，内省蓄力';
+            verdictDesc = '逆位能量全盘聚焦，提示外部环境或自身心念存在较多未解心结。此刻切忌冒进强求，更适合放慢节奏、深层复盘，解决根本矛盾后蓄势而发。';
+        } else {
+            verdictHeadline = '【转折 · 拨云见日】阴阳相荡，破旧立新';
+            verdictDesc = '机遇与挑战交织碰撞，正处于事态发展转折的关键风口。若能打破固化观念、换个维度审视全局，困局将迅速转化为成长与飞跃的新起点。';
+        }
+
         let html =
             '<div class="classic-reading-header">' +
-                '<h3>📜 牌阵逐牌深析与流向推演</h3>' +
-                '<p class="classic-reading-sub">无需点开牌面，以下已为您完整呈现各位置象征与全盘综合启示</p>' +
+                '<h3>📜 命盘整体断语与逐牌深析</h3>' +
+                '<p class="classic-reading-sub">无需点开牌面，以下已为您完整呈现核心答复、各位置象征与全盘综合启示</p>' +
+            '</div>' +
+            '<div class="reading-section" style="background:rgba(205, 187, 150, 0.08); border-radius:14px; padding:20px; margin-bottom:24px; border:1px solid var(--border-accent);">' +
+                '<div style="font-family:var(--font-serif-cn); font-size:1.22rem; font-weight:700; color:var(--gold-light); margin-bottom:8px;">' +
+                    '✦ 核心判定：' + verdictHeadline +
+                '</div>' +
+                '<p style="color:#f6f5f1; line-height:1.75; font-size:0.96rem;">' + verdictDesc + '</p>' +
             '</div>';
 
-        state.readingCards.forEach(function (sc, i) {
+        cards.forEach(function (sc, i) {
             const pos = spread.positions[i] || { name: '位置' + (i + 1), description: '' };
             const data = sc.isReversed ? sc.card.reversed : sc.card.upright;
             const orientation = sc.isReversed ? '逆位' : '正位';
@@ -1025,7 +1060,7 @@
             if (category !== 'general' && data[category]) {
                 categoryDetail =
                     '<div class="reading-category-tip">' +
-                        '<strong>🎯 ' + getCategoryName(category) + '洞察：</strong>' + data[category] +
+                        '<strong>🎯 ' + getCategoryName(category) + '专项指引：</strong>' + data[category] +
                     '</div>';
             }
 
@@ -1084,7 +1119,7 @@
         const spread = window.TarotSpreads[state.selectedSpread];
         if (!spread) return;
 
-        let text = '🔮 神秘塔罗占卜结果 🔮\n';
+        let text = '✦ 神秘塔罗占卜推演结果 ✦\n';
         text += '牌阵：' + spread.name + '\n';
         if (state.question) text += '问题：' + state.question + '\n';
         text += '\n';
@@ -1095,7 +1130,7 @@
             text += pos.name + '：' + sc.card.nameCN + '（' + orientation + '）\n';
         });
 
-        text += '\n✨ 来自 神秘塔罗 Mystic Tarot (AI 灵性占卜)';
+        text += '\n✦ 来自 神秘塔罗 Mystic Tarot (AI 灵性占卜)';
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(function () {
@@ -1125,17 +1160,28 @@
     }
 
     // ---- Meanings Page ----
+    let currentFilter = 'major';
     function bindMeaningsFilter() {
         $$('.filter-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 $$('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
                 btn.classList.add('active');
-                loadMeaningsPage(btn.dataset.filter);
+                currentFilter = btn.dataset.filter;
+                const searchInput = $('#meanings-search-input');
+                const query = searchInput ? searchInput.value.trim() : '';
+                loadMeaningsPage(currentFilter, query);
             });
         });
+
+        const searchInput = $('#meanings-search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                loadMeaningsPage(currentFilter, searchInput.value.trim());
+            });
+        }
     }
 
-    function loadMeaningsPage(filter) {
+    function loadMeaningsPage(filter, query) {
         const grid = $('#meanings-grid');
         if (!grid) return;
         grid.innerHTML = '';
@@ -1149,20 +1195,49 @@
             cards = (window.TarotDeck.minorArcana && window.TarotDeck.minorArcana[filter]) || [];
         }
 
+        if (query) {
+            const q = query.toLowerCase();
+            cards = cards.filter(function (c) {
+                const nameCN = (c.nameCN || '').toLowerCase();
+                const name = (c.name || '').toLowerCase();
+                const kws = ((c.upright && c.upright.keywords) || []).join(' ').toLowerCase();
+                const meaning = ((c.upright && c.upright.meaning) || '').toLowerCase();
+                return nameCN.includes(q) || name.includes(q) || kws.includes(q) || meaning.includes(q);
+            });
+        }
+
+        if (cards.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;">未找到符合搜索条件的卡牌</div>';
+            return;
+        }
+
         cards.forEach(function (card, i) {
             const div = document.createElement('div');
-            div.className = 'meaning-card deal-animation';
-            div.style.animationDelay = (i * 0.03) + 's';
+            div.className = 'meaning-card';
+            div.style.animationDelay = (i * 0.02) + 's';
+            
+            const excerpt = card.upright && card.upright.meaning ? card.upright.meaning.slice(0, 48) + '...' : '';
+            const keywords = (card.upright && card.upright.keywords) || [];
+            const tagsHtml = keywords.map(function (k) {
+                return '<span class="tag-keyword">' + k + '</span>';
+            }).join('');
+
             div.innerHTML =
-                '<span class="card-emoji">' + card.emoji + '</span>' +
-                '<span class="card-name-cn">' + card.nameCN + '</span>' +
-                '<span class="card-name-en">' + card.name + '</span>';
+                '<div class="meaning-card-header">' +
+                    '<span class="meaning-card-emoji">' + card.emoji + '</span>' +
+                    '<div class="meaning-card-titles">' +
+                        '<h4>' + card.nameCN + '</h4>' +
+                        '<span class="card-en">' + card.name + (card.numeral ? ' · ' + card.numeral : '') + '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<p class="meaning-card-desc">' + excerpt + '</p>' +
+                '<div class="meaning-card-tags">' + tagsHtml + '</div>';
 
             (function (c) {
                 div.addEventListener('click', function () {
                     showCardDetail(
                         { card: c, isReversed: false },
-                        { name: '牌义参考', description: '正位含义' }
+                        { name: '牌义参考', description: '正位基本象征' }
                     );
                 });
             })(card);

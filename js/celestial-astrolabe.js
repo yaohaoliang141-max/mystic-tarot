@@ -145,8 +145,8 @@
     function updateCameraPosition() {
         if (!engine.camera) return;
         if (engine.isMobile) {
-            engine.camera.position.set(0, 0.5, 14.5);
-            engine.camera.fov = 52;
+            engine.camera.position.set(0, 0, 9.8);
+            engine.camera.fov = 48;
         } else {
             engine.camera.position.set(0, 0, 10.5);
             engine.camera.fov = 45;
@@ -162,10 +162,10 @@
         engine.astrolabeGroup = root; // Keep reference for animation and mode transitions
         engine.nebulaGroup = root;
 
-        // Position on the right side for luxury editorial desktop layout
+        // Position on the right side for desktop, upper aperture for mobile
         if (engine.isMobile) {
-            root.position.set(0, 1.2, -1.0);
-            root.scale.set(0.72, 0.72, 0.72);
+            root.position.set(0, 2.0, 0);
+            root.scale.set(1.25, 1.25, 1.25);
         } else {
             root.position.set(2.8, 0.1, -0.4);
             root.scale.set(1.0, 1.0, 1.0);
@@ -201,7 +201,7 @@
             const haloMat = new THREE.MeshBasicMaterial({
                 map: tex,
                 transparent: true,
-                opacity: 0.42,
+                opacity: 0.58,
                 blending: THREE.AdditiveBlending,
                 fog: false,
                 depthWrite: false,
@@ -624,7 +624,7 @@
 
                 // Spatial Parallax Offset
                 const targetBaseX = engine.isMobile ? 0 : 2.8;
-                const targetBaseY = engine.isMobile ? 1.2 : 0.1;
+                const targetBaseY = engine.isMobile ? 2.0 : 0.1;
                 neb.position.x = targetBaseX + (engine.mouse.x * 0.35) - (engine.scrollProgress * 0.9);
                 neb.position.y = targetBaseY + (engine.mouse.y * 0.3) + (engine.scrollProgress * 0.4);
 
@@ -850,10 +850,10 @@
 
         if (engine.astrolabeGroup) {
             if (engine.isMobile) {
-                engine.astrolabeGroup.position.set(0, 1.2, -1.0);
-                engine.astrolabeGroup.scale.set(0.72, 0.72, 0.72);
+                engine.astrolabeGroup.position.set(0, 2.0, 0);
+                engine.astrolabeGroup.scale.set(1.25, 1.25, 1.25);
             } else {
-                engine.astrolabeGroup.position.set(2.8, 0.1, 0);
+                engine.astrolabeGroup.position.set(2.8, 0.1, -0.4);
                 engine.astrolabeGroup.scale.set(1.0, 1.0, 1.0);
             }
         }

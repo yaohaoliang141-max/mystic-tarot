@@ -46,11 +46,19 @@ html {
 
 body {
     font-family: var(--font-sans);
-    background: var(--bg-primary);
+    background: #020106 url('../images/milkyway-galaxy.jpg') no-repeat center center fixed;
+    background-size: cover;
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.6;
+}
+
+/* Dragging state cursor */
+body.cosmos-drag-active,
+body.cosmos-drag-active * {
+    cursor: grabbing !important;
+    user-select: none !important;
 }
 
 /* ---- Real-time 3D Celestial Canvas ---- */
@@ -329,13 +337,23 @@ main#app, nav#main-nav, footer.main-footer {
     padding: 40px 0 30px;
     position: relative;
     gap: 40px;
+    cursor: grab;
+}
+
+.editorial-hero button,
+.editorial-hero a,
+.editorial-hero input,
+.editorial-hero select {
+    cursor: pointer;
 }
 
 .hero-editorial-left {
     flex: 1.2;
     max-width: 650px;
     z-index: 2;
-    background: radial-gradient(ellipse at 25% 45%, rgba(2, 1, 6, 0.88) 0%, rgba(2, 1, 6, 0.45) 70%, transparent 100%);
+    background: radial-gradient(ellipse at 25% 45%, rgba(4, 2, 10, 0.62) 0%, rgba(4, 2, 10, 0.28) 70%, transparent 100%);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     padding: 30px 24px;
     border-radius: 20px;
 }

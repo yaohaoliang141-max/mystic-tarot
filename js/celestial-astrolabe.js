@@ -55,8 +55,17 @@
         alidadePointer: null,
         centralJewel: null,
 
-        // Milky Way & Starfield Systems
+        // Milky Way & Starfield Systems (Authentic ESO Real Photography System)
         milkyWayMesh: null,
+        galaxyYaw: -Math.PI * 0.48,
+        galaxyPitch: 0.28,
+        galaxyRoll: 0.38,
+        targetGalaxyYaw: -Math.PI * 0.48,
+        targetGalaxyPitch: 0.28,
+        isDraggingGalaxy: false,
+        dragStartX: 0,
+        dragStartY: 0,
+        driftSpeed: 0.00045,
         starfield: null,
         starPositions: null,
         starOriginals: null,
@@ -458,37 +467,57 @@
     // AUTHENTIC MILKY WAY GALAXY SYSTEM (真实欧洲南方天文台 ESO 银河系天球全景)
     // ========================================================
     function createMilkyWayBackdrop() {
-        // 1. Inverted Celestial Sky Sphere surrounding the whole 3D world
-        const sphereRadius = 95;
+        // 1. Inverted Celestial Sky Sphere surrounding the whole 3D world (ESO GigaGalaxy 360)
+        const sphereRadius = 96;
         const sphereGeo = new THREE.SphereGeometry(sphereRadius, 64, 40);
-        sphereGeo.scale(-1, 1, 1); // Invert normals to view from inside
 
-        // Material with tuned opacity & tone so typography is high-contrast and crystal clear
+        // Procedural deep-space gradient canvas for instant fallback while 1.4MB JPG finishes loading
+        const fallbackCanvas = document.createElement('canvas');
+        fallbackCanvas.width = 512;
+        fallbackCanvas.height = 256;
+        const fbCtx = fallbackCanvas.getContext('2d');
+        const grad = fbCtx.createRadialGradient(256, 128, 10, 256, 128, 250);
+        grad.addColorStop(0, '#1c1236');
+        grad.addColorStop(0.4, '#100a22');
+        grad.addColorStop(0.8, '#06030e');
+        grad.addColorStop(1, '#020106');
+        fbCtx.fillStyle = grad;
+        fbCtx.fillRect(0, 0, 512, 256);
+        const fallbackTexture = new THREE.CanvasTexture(fallbackCanvas);
+
+        // Material MUST specify fog: false so exponential scene fog does NOT black out the galaxy!
         const sphereMat = new THREE.MeshBasicMaterial({
+            map: fallbackTexture,
             color: 0xffffff,
+            side: THREE.BackSide,
+            fog: false,
+            depthWrite: false,
             transparent: true,
-            opacity: 0.70,
-            depthWrite: false
+            opacity: 0.96
         });
 
         const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
 
-        // Astronomical alignment:
         // Position the luminous galactic core (Sagittarius region) toward the upper-right (behind Astrolabe)
-        // Tilt the Galactic plane across the sky
-        sphereMesh.rotation.x = 0.28;
-        sphereMesh.rotation.y = -Math.PI * 0.48;
-        sphereMesh.rotation.z = 0.38;
+        sphereMesh.rotation.x = engine.galaxyPitch;
+        sphereMesh.rotation.y = engine.galaxyYaw;
+        sphereMesh.rotation.z = engine.galaxyRoll;
 
         engine.scene.add(sphereMesh);
         engine.milkyWayMesh = sphereMesh;
 
-        // 2. Load authentic ESO / Serge Brunier GigaGalaxy 360 real photograph
+        // 2. Load authentic ESO / Serge Brunier GigaGalaxy 360 real panoramic photograph
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load('images/milkyway-galaxy.jpg', function (tex) {
             tex.minFilter = THREE.LinearFilter;
             tex.magFilter = THREE.LinearFilter;
             tex.generateMipmaps = false;
+            if (typeof THREE.sRGBEncoding !== 'undefined') {
+                tex.encoding = THREE.sRGBEncoding;
+            }
+            if (typeof THREE.SRGBColorSpace !== 'undefined') {
+                tex.colorSpace = THREE.SRGBColorSpace;
+            }
             sphereMat.map = tex;
             sphereMat.needsUpdate = true;
         }, undefined, function (err) {
@@ -744,11 +773,22 @@
         // Scroll Interpolation
         engine.scrollProgress += (engine.targetScrollProgress - engine.scrollProgress) * 0.05;
 
-        // Authentic Milky Way Celestial Sphere Motion (Real Cosmic Parallax)
+        // Continuous Natural Cosmic Drift (clearly visible slow galactic rotation)
+        if (!engine.isDraggingGalaxy) {
+            engine.targetGalaxyYaw -= engine.driftSpeed;
+        }
+
+        // Smooth Galaxy Interpolation
+        engine.galaxyYaw += (engine.targetGalaxyYaw - engine.galaxyYaw) * 0.08;
+        engine.galaxyPitch += (engine.targetGalaxyPitch - engine.galaxyPitch) * 0.08;
+
+        // Authentic Milky Way Celestial Sphere Motion (Real Cosmic Parallax & Drag Orbit)
         if (engine.milkyWayMesh) {
-            engine.milkyWayMesh.rotation.y -= 0.0001;
-            engine.milkyWayMesh.rotation.x = 0.28 + (-engine.mouse.y * 0.05);
-            engine.milkyWayMesh.rotation.z = 0.38 + (engine.mouse.x * 0.05) + (engine.scrollProgress * 0.2);
+            const mouseTiltX = -engine.mouse.y * 0.12;
+            const mouseTiltY = engine.mouse.x * 0.14;
+            engine.milkyWayMesh.rotation.x = engine.galaxyPitch + mouseTiltX;
+            engine.milkyWayMesh.rotation.y = engine.galaxyYaw + mouseTiltY;
+            engine.milkyWayMesh.rotation.z = engine.galaxyRoll + (engine.scrollProgress * 0.35);
         }
 
         // 2. Astrolabe Rotation & Parallax
@@ -919,33 +959,80 @@
     // EVENT LISTENERS & RESIZE (响应式与视口控制)
     // ========================================================
     function bindEvents() {
-        // Mouse Move
-        window.addEventListener('mousemove', e => {
+        let isPointerDown = false;
+        let dragDistance = 0;
+
+        // Pointer Down (Mouse & Touch) - Initiate 360° Milky Way Drag
+        window.addEventListener('pointerdown', e => {
+            const target = e.target;
+            if (target.closest('button') || target.closest('input') || target.closest('textarea') ||
+                target.closest('select') || target.closest('a') || target.closest('.modal-content') ||
+                target.closest('.nav-brand') || target.closest('.nav-links') ||
+                target.closest('.spread-card') || target.closest('.tarot-card') ||
+                target.closest('.setting-group') || target.closest('.api-settings-modal')) {
+                return;
+            }
+
+            isPointerDown = true;
+            dragDistance = 0;
+            engine.isDraggingGalaxy = true;
+            engine.dragStartX = e.clientX;
+            engine.dragStartY = e.clientY;
+            document.body.classList.add('cosmos-drag-active');
+        });
+
+        // Pointer Move - 3D Tilt Parallax & 360° Galaxy Orbit
+        window.addEventListener('pointermove', e => {
             engine.mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
             engine.mouse.targetY = (e.clientY / window.innerHeight) * 2 - 1;
             engine.mouse.ndcX = e.clientX;
             engine.mouse.ndcY = e.clientY;
-        }, { passive: true });
 
-        // Touch Move (Mobile Support)
-        window.addEventListener('touchmove', e => {
-            if (e.touches.length > 0) {
-                const t = e.touches[0];
-                engine.mouse.targetX = (t.clientX / window.innerWidth) * 2 - 1;
-                engine.mouse.targetY = (t.clientY / window.innerHeight) * 2 - 1;
+            if (engine.isDraggingGalaxy) {
+                const dx = e.clientX - engine.dragStartX;
+                const dy = e.clientY - engine.dragStartY;
+                dragDistance += Math.abs(dx) + Math.abs(dy);
+
+                const sensitivity = engine.isMobile ? 0.005 : 0.0035;
+                engine.targetGalaxyYaw += dx * sensitivity;
+                engine.targetGalaxyPitch += dy * sensitivity;
+
+                // Clamp pitch to avoid gimbal flip
+                engine.targetGalaxyPitch = Math.max(-1.3, Math.min(1.3, engine.targetGalaxyPitch));
+
+                engine.dragStartX = e.clientX;
+                engine.dragStartY = e.clientY;
             }
         }, { passive: true });
 
-        // Click / Touch Resonance
-        window.addEventListener('pointerdown', e => {
-            // Don't trigger if clicking on interactive UI buttons or modals
+        // Pointer Up - Release Drag & Trigger Stellar Resonance on Click
+        window.addEventListener('pointerup', e => {
+            if (isPointerDown && dragDistance < 10) {
+                const target = e.target;
+                if (!target.closest('button') && !target.closest('input') && !target.closest('textarea') &&
+                    !target.closest('select') && !target.closest('a') && !target.closest('.modal-content') &&
+                    !target.closest('.nav-brand') && !target.closest('.nav-links') &&
+                    !target.closest('.spread-card') && !target.closest('.tarot-card')) {
+                    triggerClickResonance(e.clientX, e.clientY);
+                }
+            }
+            isPointerDown = false;
+            engine.isDraggingGalaxy = false;
+            document.body.classList.remove('cosmos-drag-active');
+        });
+
+        window.addEventListener('pointercancel', () => {
+            isPointerDown = false;
+            engine.isDraggingGalaxy = false;
+            document.body.classList.remove('cosmos-drag-active');
+        });
+
+        // Double Click to Reset Celestial View
+        window.addEventListener('dblclick', e => {
             const target = e.target;
-            if (target.closest('button') || target.closest('input') || target.closest('textarea') ||
-                target.closest('.modal-content') || target.closest('.nav-brand') || target.closest('.nav-links') ||
-                target.closest('.spread-card') || target.closest('.tarot-card')) {
-                return;
-            }
-            triggerClickResonance(e.clientX, e.clientY);
+            if (target.closest('button') || target.closest('input') || target.closest('a')) return;
+            engine.targetGalaxyYaw = -Math.PI * 0.48;
+            engine.targetGalaxyPitch = 0.28;
         });
 
         // Scroll

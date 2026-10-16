@@ -47,12 +47,12 @@
         alignProgress: 0,
 
         // 3D Objects
-        astrolabeGroup: null,
-        outerMaterRing: null,
-        zodiacRing: null,
-        reteGridGroup: null,
-        innerDialRings: [],
-        alidadePointer: null,
+        // Celestial 3D Nebula System (Authentic NASA/ESO Helix Nebula)
+        nebulaGroup: null,
+        nebulaCore: null,
+        nebulaHalo: null,
+        nebulaOuter: null,
+        astrolabeGroup: null, // compatibility alias
         centralJewel: null,
 
         // Milky Way & Starfield Systems (Authentic ESO Real Photography System)
@@ -124,7 +124,7 @@
         // Build 3D Deep Space World
         createMilkyWayBackdrop();
         createSpatialStarfield();
-        createAstrolabe();
+        createCelestialNebula();
         createDustMotes();
         createConstellationSystem();
 
@@ -155,312 +155,100 @@
     }
 
     // ========================================================
-    // ASTROLABE 3D CONSTRUCTION (古典星象仪结构 - 哑光古典蚀刻)
+    // AUTHENTIC 3D HELIX NEBULA SYSTEM (真实欧洲南方天文台 ESO 螺旋星云 · 上帝之眼)
     // ========================================================
-    function createAstrolabe() {
+    function createCelestialNebula() {
         const root = new THREE.Group();
-        engine.astrolabeGroup = root;
+        engine.astrolabeGroup = root; // Keep reference for animation and mode transitions
+        engine.nebulaGroup = root;
 
-        // Place on right side for luxury editorial desktop layout
+        // Position on the right side for luxury editorial desktop layout
         if (engine.isMobile) {
-            root.position.set(0, 1.2, -1.2);
-            root.scale.set(0.68, 0.68, 0.68);
+            root.position.set(0, 1.2, -1.0);
+            root.scale.set(0.72, 0.72, 0.72);
         } else {
             root.position.set(2.8, 0.1, -0.4);
-            root.scale.set(0.96, 0.96, 0.96);
+            root.scale.set(1.0, 1.0, 1.0);
         }
 
-        // Initial Astronomical Tilts (Pitch & Ecliptic lean)
-        root.rotation.x = 0.28;
-        root.rotation.y = -0.38;
+        // Initial Astronomical Tilts
+        root.rotation.x = 0.22;
+        root.rotation.y = -0.28;
         root.rotation.z = 0.08;
 
-        // 1. Outer Mater Ring (子午仪外环刻度盘)
-        const outerRadius = 3.6;
-        const materGeo = new THREE.RingGeometry(outerRadius - 0.28, outerRadius, 96);
-        const materTex = createMaterTexture();
-        const materMat = new THREE.MeshBasicMaterial({
-            map: materTex,
-            transparent: true,
-            side: THREE.DoubleSide,
-            color: COLORS.goldChampagne,
-            opacity: 0.48
-        });
-        const materMesh = new THREE.Mesh(materGeo, materMat);
-        root.add(materMesh);
-        engine.outerMaterRing = materMesh;
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('images/helix-nebula.png', function (tex) {
+            tex.minFilter = THREE.LinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
 
-        // Brass Hairline Borders
-        const borderMat = new THREE.LineBasicMaterial({ color: COLORS.goldPrimary, transparent: true, opacity: 0.42 });
-        const outerCircle = createHairlineCircle(outerRadius, borderMat);
-        const innerCircle = createHairlineCircle(outerRadius - 0.28, borderMat);
-        root.add(outerCircle);
-        root.add(innerCircle);
-
-        // 2. Zodiac Ecliptic Ring (黄道十二宫环 - 倾斜 23.5 度)
-        const zodiacGroup = new THREE.Group();
-        zodiacGroup.rotation.x = 0.41; // ~23.5 deg obliquity of ecliptic
-        const zodiacRadius = 2.95;
-        const zodiacGeo = new THREE.RingGeometry(zodiacRadius - 0.32, zodiacRadius, 84);
-        const zodiacTex = createZodiacTexture();
-        const zodiacMat = new THREE.MeshBasicMaterial({
-            map: zodiacTex,
-            transparent: true,
-            side: THREE.DoubleSide,
-            color: COLORS.goldChampagne,
-            opacity: 0.45
-        });
-        const zodiacMesh = new THREE.Mesh(zodiacGeo, zodiacMat);
-        zodiacGroup.add(zodiacMesh);
-
-        const zBorder1 = createHairlineCircle(zodiacRadius, borderMat);
-        const zBorder2 = createHairlineCircle(zodiacRadius - 0.32, borderMat);
-        zodiacGroup.add(zBorder1);
-        zodiacGroup.add(zBorder2);
-
-        root.add(zodiacGroup);
-        engine.zodiacRing = zodiacGroup;
-
-        // 3. Armillary Rete (天球赤道与坐标镂空骨架)
-        const reteGroup = new THREE.Group();
-        const reteMat = new THREE.LineBasicMaterial({ color: COLORS.goldDark, transparent: true, opacity: 0.28 });
-
-        // Concentric Coordinate Arcs
-        [2.35, 1.8, 1.25, 0.75].forEach((rad) => {
-            const line = createHairlineCircle(rad, reteMat);
-            reteGroup.add(line);
-        });
-
-        // Diametrical & Quadrant Filigree Spokes
-        const numSpokes = 16;
-        const spokePoints = [];
-        for (let i = 0; i < numSpokes; i++) {
-            const angle = (i / numSpokes) * Math.PI * 2;
-            const x1 = Math.cos(angle) * 0.75;
-            const y1 = Math.sin(angle) * 0.75;
-            const x2 = Math.cos(angle) * 3.3;
-            const y2 = Math.sin(angle) * 3.3;
-            spokePoints.push(new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0));
-        }
-        const spokeGeo = new THREE.BufferGeometry().setFromPoints(spokePoints);
-        const spokeLines = new THREE.LineSegments(spokeGeo, reteMat);
-        reteGroup.add(spokeLines);
-
-        // Curved Celestial Coordinate Arcs (Almucantars)
-        for (let i = -2; i <= 2; i++) {
-            if (i === 0) continue;
-            const arcRadius = 1.6 + Math.abs(i) * 0.45;
-            const arcPoints = [];
-            for (let t = -Math.PI * 0.75; t <= Math.PI * 0.75; t += 0.05) {
-                const px = Math.cos(t) * arcRadius + (i * 0.4);
-                const py = Math.sin(t) * arcRadius;
-                if (Math.hypot(px, py) <= 3.3) {
-                    arcPoints.push(new THREE.Vector3(px, py, (i * 0.05)));
-                }
-            }
-            if (arcPoints.length > 2) {
-                const arcGeo = new THREE.BufferGeometry().setFromPoints(arcPoints);
-                reteGroup.add(new THREE.Line(arcGeo, reteMat));
-            }
-        }
-
-        root.add(reteGroup);
-        engine.reteGridGroup = reteGroup;
-
-        // 4. Sacred Geometry Inner Rotating Dials (内盘神圣同心环)
-        const dialRadii = [2.15, 1.55, 0.95];
-        engine.innerDialRings = dialRadii.map((rad, idx) => {
-            const dialG = new THREE.Group();
-            const ringG = createHairlineCircle(rad, new THREE.LineBasicMaterial({
-                color: idx === 0 ? COLORS.goldChampagne : COLORS.goldDark,
+            // 1. Primary Volumetric Core Disc (Authentic High-Res Helix Nebula)
+            const coreGeo = new THREE.PlaneGeometry(6.6, 6.6);
+            const coreMat = new THREE.MeshBasicMaterial({
+                map: tex,
                 transparent: true,
-                opacity: 0.35
-            }));
-            dialG.add(ringG);
+                opacity: 0.98,
+                fog: false,
+                depthWrite: false,
+                side: THREE.DoubleSide
+            });
+            const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+            root.add(coreMesh);
+            engine.nebulaCore = coreMesh;
 
-            // Add inscribed polygon (Hexagram or Octagram)
-            const sides = idx === 0 ? 12 : (idx === 1 ? 8 : 6);
-            const polyPoints = [];
-            for (let s = 0; s <= sides; s++) {
-                const a = (s / sides) * Math.PI * 2;
-                polyPoints.push(new THREE.Vector3(Math.cos(a) * rad, Math.sin(a) * rad, 0));
-            }
-            const polyGeo = new THREE.BufferGeometry().setFromPoints(polyPoints);
-            const polyLine = new THREE.Line(polyGeo, new THREE.LineBasicMaterial({
-                color: COLORS.goldBronze,
+            // 2. Secondary Luminous Ethereal Filament Layer (Diffused Gas Shell with Additive Glow)
+            const haloGeo = new THREE.PlaneGeometry(8.2, 8.2);
+            const haloMat = new THREE.MeshBasicMaterial({
+                map: tex,
                 transparent: true,
-                opacity: 0.25
-            }));
-            dialG.add(polyLine);
+                opacity: 0.42,
+                blending: THREE.AdditiveBlending,
+                fog: false,
+                depthWrite: false,
+                side: THREE.DoubleSide
+            });
+            const haloMesh = new THREE.Mesh(haloGeo, haloMat);
+            haloMesh.position.z = -0.15;
+            root.add(haloMesh);
+            engine.nebulaHalo = haloMesh;
 
-            root.add(dialG);
-            return {
-                group: dialG,
-                speed: (idx % 2 === 0 ? 1 : -1) * (0.0006 + idx * 0.0004)
-            };
+            // 3. Tertiary Outer Stellar Ejection Halo
+            const outerGeo = new THREE.PlaneGeometry(9.6, 9.6);
+            const outerMat = new THREE.MeshBasicMaterial({
+                map: tex,
+                transparent: true,
+                opacity: 0.22,
+                blending: THREE.AdditiveBlending,
+                fog: false,
+                depthWrite: false,
+                side: THREE.DoubleSide
+            });
+            const outerMesh = new THREE.Mesh(outerGeo, outerMat);
+            outerMesh.position.z = -0.3;
+            root.add(outerMesh);
+            engine.nebulaOuter = outerMesh;
+
+            // 4. Central Pulsar / Stellar Core (Radiant Pulsing Diamond at the Eye Center)
+            const jewelGeo = new THREE.CircleGeometry(0.24, 32);
+            const jewelMat = new THREE.MeshBasicMaterial({
+                map: createStarlightTexture(),
+                color: COLORS.starWhite,
+                transparent: true,
+                opacity: 0.95,
+                fog: false,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending,
+                side: THREE.DoubleSide
+            });
+            const jewel = new THREE.Mesh(jewelGeo, jewelMat);
+            jewel.position.z = 0.08;
+            root.add(jewel);
+            engine.centralJewel = jewel;
+        }, undefined, function (err) {
+            console.warn('Nebula texture load error:', err);
         });
-
-        // 5. Alidade Pointer (游标准星规尺)
-        const alidadeG = new THREE.Group();
-        const aliLength = 3.55;
-        const pointerPoints = [
-            new THREE.Vector3(-aliLength, 0, 0.02),
-            new THREE.Vector3(-0.35, 0.08, 0.02),
-            new THREE.Vector3(0, 0.18, 0.02),
-            new THREE.Vector3(0.35, 0.08, 0.02),
-            new THREE.Vector3(aliLength, 0, 0.02),
-            new THREE.Vector3(0.35, -0.08, 0.02),
-            new THREE.Vector3(0, -0.18, 0.02),
-            new THREE.Vector3(-0.35, -0.08, 0.02),
-            new THREE.Vector3(-aliLength, 0, 0.02)
-        ];
-        const aliGeo = new THREE.BufferGeometry().setFromPoints(pointerPoints);
-        const aliLine = new THREE.Line(aliGeo, new THREE.LineBasicMaterial({
-            color: COLORS.ivoryWarm,
-            transparent: true,
-            opacity: 0.52
-        }));
-        alidadeG.add(aliLine);
-
-        // Sight Pinules at Pointer Ends
-        [-aliLength + 0.3, aliLength - 0.3].forEach(xPos => {
-            const pinG = createHairlineCircle(0.12, borderMat);
-            pinG.position.set(xPos, 0, 0.02);
-            alidadeG.add(pinG);
-        });
-
-        root.add(alidadeG);
-        engine.alidadePointer = alidadeG;
-
-        // 6. Central Brass Boss & Axle (中心黄铜宝核)
-        const centerBossGeo = new THREE.CircleGeometry(0.24, 32);
-        const centerBossMat = new THREE.MeshBasicMaterial({
-            color: COLORS.goldDark,
-            transparent: true,
-            opacity: 0.6,
-            side: THREE.DoubleSide
-        });
-        const centerBoss = new THREE.Mesh(centerBossGeo, centerBossMat);
-        centerBoss.position.z = 0.03;
-        root.add(centerBoss);
-
-        const jewelGeo = new THREE.CircleGeometry(0.12, 32);
-        const jewelMat = new THREE.MeshBasicMaterial({
-            color: COLORS.ivoryWarm,
-            transparent: true,
-            opacity: 0.75,
-            side: THREE.DoubleSide
-        });
-        const jewel = new THREE.Mesh(jewelGeo, jewelMat);
-        jewel.position.z = 0.04;
-        root.add(jewel);
-        engine.centralJewel = jewel;
 
         engine.scene.add(root);
-    }
-
-    function createHairlineCircle(radius, material, segments = 84) {
-        const points = [];
-        for (let i = 0; i <= segments; i++) {
-            const theta = (i / segments) * Math.PI * 2;
-            points.push(new THREE.Vector3(Math.cos(theta) * radius, Math.sin(theta) * radius, 0));
-        }
-        const geo = new THREE.BufferGeometry().setFromPoints(points);
-        return new THREE.Line(geo, material);
-    }
-
-    // Canvas Texture Generators for Engraved Astrolabe Markings
-    function createMaterTexture() {
-        const size = 1024;
-        const cv = document.createElement('canvas');
-        cv.width = size;
-        cv.height = size;
-        const ctx = cv.getContext('2d');
-        const cx = size / 2;
-        const cy = size / 2;
-
-        ctx.clearRect(0, 0, size, size);
-        ctx.strokeStyle = '#c5a467';
-        ctx.fillStyle = '#e2d7c0';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        // Outer 360 degree ticks
-        const rOuter = size * 0.49;
-        const rInner1 = size * 0.46;
-        const rInner2 = size * 0.44;
-
-        for (let i = 0; i < 360; i++) {
-            const rad = (i * Math.PI) / 180;
-            const cos = Math.cos(rad);
-            const sin = Math.sin(rad);
-
-            let rStart = (i % 10 === 0) ? rInner2 : ((i % 5 === 0) ? rInner1 : size * 0.475);
-            ctx.lineWidth = (i % 10 === 0) ? 2.0 : 0.9;
-
-            ctx.beginPath();
-            ctx.moveTo(cx + cos * rStart, cy + sin * rStart);
-            ctx.lineTo(cx + cos * rOuter, cy + sin * rOuter);
-            ctx.stroke();
-
-            // Roman numerals every 30 degrees (XII, I, II, III...)
-            if (i % 30 === 0) {
-                const hour = (i / 30 + 3) % 12 || 12;
-                const romanMap = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
-                const roman = romanMap[hour % 12];
-                const textR = size * 0.415;
-                ctx.font = '600 18px "Cinzel", "Times New Roman", serif';
-                ctx.fillText(roman, cx + Math.cos(rad) * textR, cy + Math.sin(rad) * textR);
-            }
-        }
-
-        const tex = new THREE.CanvasTexture(cv);
-        tex.anisotropy = 4;
-        return tex;
-    }
-
-    function createZodiacTexture() {
-        const size = 1024;
-        const cv = document.createElement('canvas');
-        cv.width = size;
-        cv.height = size;
-        const ctx = cv.getContext('2d');
-        const cx = size / 2;
-        const cy = size / 2;
-
-        ctx.clearRect(0, 0, size, size);
-        ctx.strokeStyle = '#b39356';
-        ctx.fillStyle = '#e5dbcb';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        const symbols = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
-        const rZodiac = size * 0.44;
-
-        for (let i = 0; i < 12; i++) {
-            const a = (i / 12) * Math.PI * 2;
-            const cos = Math.cos(a);
-            const sin = Math.sin(a);
-
-            // Dividing graduation lines
-            ctx.lineWidth = 1.6;
-            ctx.beginPath();
-            ctx.moveTo(cx + cos * (size * 0.38), cy + sin * (size * 0.38));
-            ctx.lineTo(cx + cos * (size * 0.49), cy + sin * (size * 0.49));
-            ctx.stroke();
-
-            // Zodiac symbol
-            const symAngle = a + Math.PI / 12;
-            const sx = cx + Math.cos(symAngle) * rZodiac;
-            const sy = cy + Math.sin(symAngle) * rZodiac;
-
-            ctx.font = '22px serif';
-            ctx.fillText(symbols[i], sx, sy);
-        }
-
-        const tex = new THREE.CanvasTexture(cv);
-        tex.anisotropy = 4;
-        return tex;
     }
 
     // ========================================================
@@ -809,63 +597,57 @@
             engine.milkyWayMesh.rotation.z = engine.galaxyRoll + (engine.scrollProgress * 0.35);
         }
 
-        // 2. Astrolabe Rotation & Parallax
+        // 2. 3D Celestial Nebula Rotation, Swirl & Parallax
         if (engine.astrolabeGroup) {
-            const astro = engine.astrolabeGroup;
+            const neb = engine.astrolabeGroup;
 
             if (engine.mode === 'idle') {
-                // Harmonic Differential Idle Rotation
-                if (engine.outerMaterRing) engine.outerMaterRing.rotation.z += 0.0006;
-                if (engine.zodiacRing) engine.zodiacRing.rotation.z -= 0.0011;
-                if (engine.reteGridGroup) engine.reteGridGroup.rotation.z += 0.0003;
-                if (engine.alidadePointer) {
-                    engine.alidadePointer.rotation.z = Math.sin(time * 0.45) * 0.55 + (time * 0.05);
+                // Differential Swirling Nebula Gas Layers
+                if (engine.nebulaCore) engine.nebulaCore.rotation.z += 0.0006;
+                if (engine.nebulaHalo) engine.nebulaHalo.rotation.z -= 0.0004;
+                if (engine.nebulaOuter) engine.nebulaOuter.rotation.z += 0.0002;
+
+                // Central Core Breathing Pulse
+                if (engine.centralJewel) {
+                    const pulse = 1.0 + Math.sin(time * 1.5) * 0.28;
+                    engine.centralJewel.scale.set(pulse, pulse, pulse);
                 }
 
-                engine.innerDialRings.forEach(d => {
-                    d.group.rotation.z += d.speed;
-                });
-
-                // Subtle gyroscopic precession wobble
+                // Subtle organic cosmic wobble
                 const wobbleX = Math.sin(time * 0.35) * 0.03;
                 const wobbleY = Math.cos(time * 0.28) * 0.03;
 
                 // 3D Spatial Tilt driven by Mouse (鼠标空间倾斜)
-                astro.rotation.x = 0.28 + wobbleX + (-engine.mouse.y * 0.35);
-                astro.rotation.y = -0.38 + wobbleY + (engine.mouse.x * 0.45);
-                astro.rotation.z = 0.08 + (engine.mouse.x * 0.15) + (engine.scrollProgress * 0.8);
+                neb.rotation.x = 0.22 + wobbleX + (-engine.mouse.y * 0.32);
+                neb.rotation.y = -0.28 + wobbleY + (engine.mouse.x * 0.42);
+                neb.rotation.z = (time * 0.015) + (engine.mouse.x * 0.12) + (engine.scrollProgress * 0.8);
 
                 // Spatial Parallax Offset
                 const targetBaseX = engine.isMobile ? 0 : 2.8;
                 const targetBaseY = engine.isMobile ? 1.2 : 0.1;
-                astro.position.x = targetBaseX + (engine.mouse.x * 0.35) - (engine.scrollProgress * 0.9);
-                astro.position.y = targetBaseY + (engine.mouse.y * 0.3) + (engine.scrollProgress * 0.4);
+                neb.position.x = targetBaseX + (engine.mouse.x * 0.35) - (engine.scrollProgress * 0.9);
+                neb.position.y = targetBaseY + (engine.mouse.y * 0.3) + (engine.scrollProgress * 0.4);
 
             } else if (engine.mode === 'aligning') {
-                // High-precision synchronization spin towards cosmic alignment
+                // Cosmic Gathering & Gravitational Compression Transition
                 const ease = Math.sin((engine.alignProgress * Math.PI) / 2);
-                if (engine.outerMaterRing) engine.outerMaterRing.rotation.z += 0.05 * (1 - ease * 0.8);
-                if (engine.zodiacRing) engine.zodiacRing.rotation.z -= 0.07 * (1 - ease * 0.8);
-                if (engine.alidadePointer) engine.alidadePointer.rotation.z += 0.09 * (1 - ease * 0.8);
+                if (engine.nebulaCore) engine.nebulaCore.rotation.z += 0.06 * (1 - ease * 0.7);
+                if (engine.nebulaHalo) engine.nebulaHalo.rotation.z -= 0.04 * (1 - ease * 0.7);
 
-                // Scale & centering focus
-                const currentScale = (engine.isMobile ? 0.72 : 1.0) * (1.0 + ease * 0.15);
-                astro.scale.set(currentScale, currentScale, currentScale);
+                const currentScale = (engine.isMobile ? 0.72 : 1.0) * (1.0 + ease * 0.2);
+                neb.scale.set(currentScale, currentScale, currentScale);
 
-                // Central jewel pulse
                 if (engine.centralJewel) {
-                    const pulse = 1.0 + Math.sin(engine.alignProgress * Math.PI * 4) * 0.6;
-                    engine.centralJewel.scale.set(pulse, pulse, pulse);
+                    const flare = 1.0 + Math.sin(engine.alignProgress * Math.PI * 4) * 1.4;
+                    engine.centralJewel.scale.set(flare, flare, flare);
                 }
 
             } else if (engine.mode === 'divination') {
-                // Majestic slow backdrop state
-                if (engine.outerMaterRing) engine.outerMaterRing.rotation.z += 0.0003;
-                if (engine.zodiacRing) engine.zodiacRing.rotation.z -= 0.0005;
-                if (engine.alidadePointer) engine.alidadePointer.rotation.z += 0.0002;
+                if (engine.nebulaCore) engine.nebulaCore.rotation.z += 0.0003;
+                if (engine.nebulaHalo) engine.nebulaHalo.rotation.z -= 0.0002;
 
-                astro.rotation.x = 0.22 + (-engine.mouse.y * 0.15);
-                astro.rotation.y = -0.25 + (engine.mouse.x * 0.2);
+                neb.rotation.x = 0.18 + (-engine.mouse.y * 0.12);
+                neb.rotation.y = -0.22 + (engine.mouse.x * 0.18);
             }
         }
 
@@ -901,12 +683,6 @@
             engine.starfield.geometry.attributes.position.needsUpdate = true;
         }
 
-        // Parallax & Drift for Realistic Milky Way Backdrop
-        if (engine.milkyWayMesh) {
-            engine.milkyWayMesh.position.x = -engine.mouse.x * 1.6;
-            engine.milkyWayMesh.position.y = -engine.mouse.y * 1.1;
-            engine.milkyWayMesh.rotation.z = -0.52 + (-engine.mouse.x * 0.025);
-        }
 
         // 4. Foreground Dust Particles & Mouse Repulsion
         if (engine.dustParticles && engine.dustData.length) {

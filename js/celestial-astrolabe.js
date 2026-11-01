@@ -560,6 +560,47 @@
 
     function setMode(newMode) {
         engine.mode = newMode;
+        if (typeof gsap !== 'undefined' && engine.astrolabeGroup) {
+            if (newMode === 'divination') {
+                gsap.to(engine.astrolabeGroup.position, {
+                    x: 0,
+                    y: engine.isMobile ? 1.0 : -0.2,
+                    z: -1.2,
+                    duration: 1.2,
+                    ease: 'power2.inOut',
+                    overwrite: 'auto'
+                });
+                gsap.to(engine.astrolabeGroup.scale, {
+                    x: engine.isMobile ? 0.9 : 0.82,
+                    y: engine.isMobile ? 0.9 : 0.82,
+                    z: engine.isMobile ? 0.9 : 0.82,
+                    duration: 1.2,
+                    ease: 'power2.inOut',
+                    overwrite: 'auto'
+                });
+            } else if (newMode === 'idle') {
+                const targetX = engine.isMobile ? 0 : 2.8;
+                const targetY = engine.isMobile ? 2.0 : 0.1;
+                const targetZ = engine.isMobile ? 0 : -0.4;
+                const targetScale = engine.isMobile ? 1.25 : 1.0;
+                gsap.to(engine.astrolabeGroup.position, {
+                    x: targetX,
+                    y: targetY,
+                    z: targetZ,
+                    duration: 1.2,
+                    ease: 'power2.inOut',
+                    overwrite: 'auto'
+                });
+                gsap.to(engine.astrolabeGroup.scale, {
+                    x: targetScale,
+                    y: targetScale,
+                    z: targetScale,
+                    duration: 1.2,
+                    ease: 'power2.inOut',
+                    overwrite: 'auto'
+                });
+            }
+        }
     }
 
     // ========================================================

@@ -18,6 +18,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Web-Three.js_3D-09090b?style=for-the-badge&logo=three.js&logoColor=white" alt="Three.js">
+  <img src="https://img.shields.io/badge/动效引擎-GSAP_3.12-88ce02?style=for-the-badge&logo=greensock&logoColor=white" alt="GSAP 3">
   <img src="https://img.shields.io/badge/Design_System-shadcn%2Fui_Inspired-black?style=for-the-badge" alt="Design System">
   <img src="https://img.shields.io/badge/AI_Agent-DeepSeek_%2F_OpenAI-7c3aed?style=for-the-badge" alt="AI Agent">
   <img src="https://img.shields.io/badge/Mobile-First_Responsive-059669?style=for-the-badge" alt="Mobile First">
@@ -90,6 +91,7 @@
 ## ✨ 核心亮点
 
 - 🪐 **纯实时 3D 真实螺旋星云 (Helix Nebula)** — 基于 Three.js 打造深邃天体模型，支持全角度阻尼鼠标与单指触控拖拽漫游。
+- ⚡ **GSAP 3.12 官方顶级动效编排引擎** — 引入 GreenSock GSAP & ScrollTrigger，提供电影级跨页平滑淡入淡出、交错发牌物理阻尼、真 3D 轴向翻牌、高帧率悬浮阻尼与磨砂弹窗优雅展开。
 - 🏛️ **当代独立设计工作室审美 (Contemporary Studio Aesthetic)** — 融入 `UI UX Pro Max` 与 `shadcn/ui` 规范，采用黑曜深空冷色调底色（`#030306`）、细微发丝线边框（Hairline Border）、20px 磨砂高斯模糊与克制哑金质感。
 - 🔤 **专业字体排版系统 (Fontsource 规范)** — 融合古典仪式衬线体 `Cinzel`、文学引言 `Cormorant Garamond`、中文优雅宋体 `Noto Serif SC` 与等宽天文数据体 `JetBrains Mono`。
 - ⚜️ **原创品牌矢量标识 (Logo Design Skill)** — 手绘纯 SVG 天体之眼（Celestial Oculus）星轨徽标与神圣几何（Sacred Geometry）卡背纹理，彻底告别粗糙 Emoji。

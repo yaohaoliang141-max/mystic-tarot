@@ -6,6 +6,13 @@
 (function () {
     'use strict';
 
+    // Register GSAP plugins if available
+    if (typeof gsap !== 'undefined') {
+        if (typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+        }
+    }
+
     // ---- Constants & Config ----
     const DEFAULT_AI_CONFIG = {
         provider: 'deepseek',
@@ -75,6 +82,7 @@
         updateAiBadgeStatus();
         loadMeaningsPage('major');
         initCard3DTilt();
+        initLandingGsapAnimations();
     }
 
     // ---- Stars Background ----
@@ -136,15 +144,12 @@
     }
 
     function navigateTo(pageId) {
-        $$('.page').forEach(function (p) { p.classList.remove('active'); });
+        if (state.currentPage === pageId) return;
 
         const target = $('#' + pageId + '-page');
-        if (target) {
-            target.classList.add('active');
-            target.style.animation = 'none';
-            target.offsetHeight; // force reflow
-            target.style.animation = '';
-        }
+        if (!target) return;
+
+        const currentActive = $('.page.active');
 
         $$('.nav-link').forEach(function (link) {
             link.classList.toggle('active', link.dataset.page === pageId);
@@ -155,7 +160,6 @@
         const navLinks = $('#nav-links');
         if (navLinks) navLinks.classList.remove('open');
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         state.currentPage = pageId;
 
         if (window.CelestialSpace && typeof window.CelestialSpace.setMode === 'function') {
@@ -164,6 +168,95 @@
             } else {
                 window.CelestialSpace.setMode('divination');
             }
+        }
+
+        if (typeof gsap !== 'undefined') {
+            if (currentActive && currentActive !== target) {
+                gsap.to(currentActive, {
+                    autoAlpha: 0,
+                    y: -12,
+                    duration: 0.22,
+                    ease: 'power2.in',
+                    onComplete: function () {
+                        currentActive.classList.remove('active');
+                        gsap.set(currentActive, { clearProps: 'all' });
+                        activateTargetPage(target, pageId);
+                    }
+                });
+            } else {
+                if (currentActive) currentActive.classList.remove('active');
+                activateTargetPage(target, pageId);
+            }
+        } else {
+            $$('.page').forEach(function (p) { p.classList.remove('active'); });
+            target.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function activateTargetPage(target, pageId) {
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        gsap.fromTo(target,
+            { autoAlpha: 0, y: 16 },
+            {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.45,
+                ease: 'power2.out',
+                clearProps: 'transform,opacity,visibility',
+                onComplete: function () {
+                    if (typeof ScrollTrigger !== 'undefined') {
+                        ScrollTrigger.refresh();
+                    }
+                }
+            }
+        );
+
+        if (pageId === 'spread') {
+            animateSpreadPage();
+        }
+    }
+
+    function animateSpreadPage() {
+        if (typeof gsap === 'undefined') return;
+        gsap.from('.spread-card', {
+            autoAlpha: 0,
+            y: 28,
+            stagger: 0.08,
+            duration: 0.55,
+            ease: 'back.out(1.15)',
+            clearProps: 'transform,opacity,visibility'
+        });
+    }
+
+    function initLandingGsapAnimations() {
+        if (typeof gsap === 'undefined') return;
+
+        const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        heroTl.from('.editorial-metadata', { autoAlpha: 0, y: -15, duration: 0.6, delay: 0.1 })
+              .from('.editorial-title .title-eyebrow', { autoAlpha: 0, y: 15, duration: 0.5 }, '-=0.35')
+              .from('.editorial-title .title-main', { autoAlpha: 0, y: 25, duration: 0.7 }, '-=0.35')
+              .from('.editorial-title .title-sub', { autoAlpha: 0, y: 15, duration: 0.5 }, '-=0.4')
+              .from('.editorial-manifesto', { autoAlpha: 0, x: -15, duration: 0.6 }, '-=0.35')
+              .from('.hero-actions-row', { autoAlpha: 0, y: 20, duration: 0.55 }, '-=0.35')
+              .from('.editorial-telemetry .telemetry-item', { autoAlpha: 0, y: 15, stagger: 0.08, duration: 0.5 }, '-=0.3');
+
+        if (typeof ScrollTrigger !== 'undefined') {
+            gsap.from('.pillar-card', {
+                scrollTrigger: {
+                    trigger: '.editorial-pillars',
+                    start: 'top 85%',
+                    once: true
+                },
+                autoAlpha: 0,
+                y: 35,
+                stagger: 0.1,
+                duration: 0.7,
+                ease: 'power2.out',
+                clearProps: 'all'
+            });
         }
     }
 
@@ -232,12 +325,44 @@
                 const content = modal.querySelector('.modal-content');
                 if (content) content.scrollTop = 0;
                 document.body.classList.add('modal-open');
+
+                if (typeof gsap !== 'undefined') {
+                    if (overlay) gsap.fromTo(overlay, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 });
+                    if (content) {
+                        gsap.fromTo(content,
+                            { autoAlpha: 0, y: 25, scale: 0.95 },
+                            { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, ease: 'power2.out' }
+                        );
+                    }
+                }
             }
         }
 
         function closeModal() {
-            if (modal) modal.style.display = 'none';
-            document.body.classList.remove('modal-open');
+            if (!modal) return;
+            if (typeof gsap !== 'undefined') {
+                const content = modal.querySelector('.modal-content');
+                if (content) {
+                    gsap.to(content, {
+                        autoAlpha: 0,
+                        y: 18,
+                        scale: 0.96,
+                        duration: 0.2,
+                        ease: 'power2.in',
+                        onComplete: function () {
+                            modal.style.display = 'none';
+                            document.body.classList.remove('modal-open');
+                        }
+                    });
+                } else {
+                    modal.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                }
+                if (overlay) gsap.to(overlay, { autoAlpha: 0, duration: 0.2 });
+            } else {
+                modal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+            }
         }
 
         if (openNavBtn) openNavBtn.addEventListener('click', openModal);
@@ -427,22 +552,46 @@
     // ---- 3D Card Hover & Tilt Dynamic Response ----
     function initCard3DTilt() {
         document.addEventListener('mousemove', function (e) {
-            const card = e.target.closest('.tarot-card:not(.disabled), .spread-card, .pillar-card');
+            const card = e.target.closest('.tarot-card:not(.disabled):not(.flipped), .spread-card, .pillar-card');
             if (!card) return;
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-            const tiltX = (y - centerY) / centerY * -8;
-            const tiltY = (x - centerX) / centerX * 8;
-            card.style.transform = `perspective(1000px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) translateY(-8px)`;
+            const tiltX = ((y - centerY) / centerY) * -7;
+            const tiltY = ((x - centerX) / centerX) * 7;
+
+            if (typeof gsap !== 'undefined') {
+                gsap.to(card, {
+                    rotationX: tiltX,
+                    rotationY: tiltY,
+                    y: -6,
+                    transformPerspective: 1000,
+                    duration: 0.3,
+                    ease: 'power2.out',
+                    overwrite: 'auto'
+                });
+            } else {
+                card.style.transform = `perspective(1000px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) translateY(-8px)`;
+            }
         });
 
         document.addEventListener('mouseout', function (e) {
-            const card = e.target.closest('.tarot-card, .spread-card, .pillar-card');
+            const card = e.target.closest('.tarot-card:not(.selected), .spread-card, .pillar-card');
             if (card && (!e.relatedTarget || !card.contains(e.relatedTarget))) {
-                card.style.transform = '';
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(card, {
+                        rotationX: 0,
+                        rotationY: 0,
+                        y: 0,
+                        duration: 0.45,
+                        ease: 'power2.out',
+                        overwrite: 'auto'
+                    });
+                } else {
+                    card.style.transform = '';
+                }
             }
         });
     }
@@ -477,8 +626,7 @@
 
         for (let i = 0; i < totalCards; i++) {
             const cardEl = document.createElement('div');
-            cardEl.className = 'tarot-card deal-animation';
-            cardEl.style.animationDelay = (i * 0.05) + 's';
+            cardEl.className = 'tarot-card';
             cardEl.dataset.index = i;
             cardEl.innerHTML =
                 '<div class="tarot-card-inner">' +
@@ -495,6 +643,19 @@
 
             deck.appendChild(cardEl);
         }
+
+        if (typeof gsap !== 'undefined') {
+            gsap.from('#card-deck .tarot-card', {
+                autoAlpha: 0,
+                y: 45,
+                rotationZ: function (idx) { return ((idx % 7) - 3) * 2; },
+                scale: 0.92,
+                stagger: 0.035,
+                duration: 0.55,
+                ease: 'back.out(1.15)',
+                clearProps: 'transform,opacity,visibility'
+            });
+        }
     }
 
     function selectCard(cardEl, index) {
@@ -502,7 +663,7 @@
         if (cardEl.classList.contains('selected')) return;
         if (cardEl.classList.contains('disabled')) return;
 
-        cardEl.classList.add('selected', 'flipped');
+        cardEl.classList.add('selected');
 
         const allCards = window.TarotDeck.getAllCards();
         let card;
@@ -530,15 +691,34 @@
         state.selectedCards.push(selectedCard);
         state.readingCards.push(selectedCard);
 
+        const inner = cardEl.querySelector('.tarot-card-inner');
+        if (typeof gsap !== 'undefined' && inner) {
+            cardEl.classList.add('flipped');
+            const flipTl = gsap.timeline();
+            flipTl.to(cardEl, { y: -20, scale: 1.05, duration: 0.25, ease: 'power2.out' })
+                  .to(inner, { rotationY: 180, duration: 0.65, ease: 'power2.inOut' }, '-=0.1');
+        } else {
+            cardEl.classList.add('flipped');
+        }
+
         updateSelectedArea();
 
         if (state.selectedCards.length >= state.cardsNeeded) {
             $$('.tarot-card:not(.selected)').forEach(function (c) {
                 c.classList.add('disabled');
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(c, { autoAlpha: 0.25, scale: 0.96, duration: 0.4 });
+                }
             });
             const revealBtn = $('#reveal-btn');
             if (revealBtn) {
                 revealBtn.style.display = '';
+                if (typeof gsap !== 'undefined') {
+                    gsap.fromTo(revealBtn,
+                        { autoAlpha: 0, scale: 0.9, y: 15 },
+                        { autoAlpha: 1, scale: 1, y: 0, duration: 0.45, ease: 'back.out(1.3)' }
+                    );
+                }
                 setTimeout(function () {
                     revealBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 150);
@@ -557,8 +737,7 @@
         state.selectedCards.forEach(function (sc, i) {
             const posName = (spread.positions[i] ? spread.positions[i].name : '位置' + (i + 1));
             const div = document.createElement('div');
-            div.className = 'result-card-wrapper deal-animation';
-            div.style.animationDelay = (i * 0.1) + 's';
+            div.className = 'result-card-wrapper';
             div.innerHTML =
                 '<div class="result-position">' + posName + '</div>' +
                 '<div class="result-card' + (sc.isReversed ? ' reversed-card' : '') + '">' +
@@ -568,6 +747,17 @@
                 '</div>';
             container.appendChild(div);
         });
+
+        if (typeof gsap !== 'undefined') {
+            gsap.from('#selected-cards .result-card-wrapper', {
+                autoAlpha: 0,
+                y: 15,
+                scale: 0.9,
+                duration: 0.4,
+                stagger: 0.08,
+                ease: 'back.out(1.2)'
+            });
+        }
     }
 
     // ---- Reveal Reading ----
@@ -597,8 +787,7 @@
             state.readingCards.forEach(function (sc, i) {
                 const pos = spread.positions[i] || { name: '位置' + (i + 1), description: '' };
                 const wrapper = document.createElement('div');
-                wrapper.className = 'result-card-wrapper deal-animation';
-                wrapper.style.animationDelay = (i * 0.15) + 's';
+                wrapper.className = 'result-card-wrapper';
                 wrapper.innerHTML =
                     '<div class="result-position">' + pos.name + '</div>' +
                     '<div class="result-card">' +
@@ -617,6 +806,18 @@
 
                 resultSpread.appendChild(wrapper);
             });
+
+            if (typeof gsap !== 'undefined') {
+                gsap.from('#result-spread .result-card-wrapper', {
+                    autoAlpha: 0,
+                    y: 35,
+                    rotationY: -15,
+                    stagger: 0.12,
+                    duration: 0.65,
+                    ease: 'back.out(1.15)',
+                    clearProps: 'transform,opacity,visibility'
+                });
+            }
         }
 
         // Determine AI or Classic Reading
@@ -994,9 +1195,39 @@
         const closeBtn = modal.querySelector('.modal-close');
         const overlay = modal.querySelector('.modal-overlay');
 
+        if (typeof gsap !== 'undefined') {
+            if (overlay) gsap.fromTo(overlay, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 });
+            if (modalContent) {
+                gsap.fromTo(modalContent,
+                    { autoAlpha: 0, y: 25, scale: 0.95 },
+                    { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, ease: 'power2.out' }
+                );
+            }
+        }
+
         function closeModal() {
-            modal.style.display = 'none';
-            document.body.classList.remove('modal-open');
+            if (typeof gsap !== 'undefined') {
+                if (modalContent) {
+                    gsap.to(modalContent, {
+                        autoAlpha: 0,
+                        y: 18,
+                        scale: 0.96,
+                        duration: 0.2,
+                        ease: 'power2.in',
+                        onComplete: function () {
+                            modal.style.display = 'none';
+                            document.body.classList.remove('modal-open');
+                        }
+                    });
+                } else {
+                    modal.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                }
+                if (overlay) gsap.to(overlay, { autoAlpha: 0, duration: 0.2 });
+            } else {
+                modal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+            }
             document.removeEventListener('keydown', escHandler);
         }
 
@@ -1214,7 +1445,6 @@
         cards.forEach(function (card, i) {
             const div = document.createElement('div');
             div.className = 'meaning-card';
-            div.style.animationDelay = (i * 0.02) + 's';
             
             const excerpt = card.upright && card.upright.meaning ? card.upright.meaning.slice(0, 48) + '...' : '';
             const keywords = (card.upright && card.upright.keywords) || [];
@@ -1244,6 +1474,17 @@
 
             grid.appendChild(div);
         });
+
+        if (typeof gsap !== 'undefined') {
+            gsap.from('#meanings-grid .meaning-card', {
+                autoAlpha: 0,
+                y: 20,
+                stagger: 0.02,
+                duration: 0.35,
+                ease: 'power2.out',
+                clearProps: 'transform,opacity,visibility'
+            });
+        }
     }
 
     // ---- Utilities ----
@@ -1267,7 +1508,26 @@
         }
         toast.textContent = message;
         toast.classList.add('show');
-        setTimeout(function () { toast.classList.remove('show'); }, 2500);
+        if (typeof gsap !== 'undefined') {
+            gsap.killTweensOf(toast);
+            gsap.fromTo(toast,
+                { autoAlpha: 0, y: 25, scale: 0.92 },
+                { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.4)' }
+            );
+            setTimeout(function () {
+                gsap.to(toast, {
+                    autoAlpha: 0,
+                    y: -15,
+                    duration: 0.3,
+                    ease: 'power2.in',
+                    onComplete: function () {
+                        toast.classList.remove('show');
+                    }
+                });
+            }, 2300);
+        } else {
+            setTimeout(function () { toast.classList.remove('show'); }, 2500);
+        }
     }
 
     function resetState() {
